@@ -1,0 +1,15 @@
+package com.globits.da.service;
+
+import com.globits.da.dto.DistrictDto;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface DistrictService {
+
+    DistrictDto getById(UUID id);
+    List<DistrictDto> getAll();
+    DistrictDto saveOrUpdate(DistrictDto dto, UUID id);
+
+    Boolean delete(UUID id);
+}

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f9dc48bc-b3bc-483c-8aec-926375e76ace" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/District.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/District.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/Town.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/Town.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/dto/DistrictDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/dto/DistrictDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/dto/TownDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/dto/TownDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/MyFirstApiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/MyFirstApiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/RestCertificateController.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/RestCertificateController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/RestDistrictController.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/RestDistrictController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/RestProvinceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/RestProvinceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/RestTownController.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/RestTownController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/service/impl/ProvinceServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/service/impl/ProvinceServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/MyFirstApiController$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/MyFirstApiController$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/MyFirstApiController.class" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/MyFirstApiController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/RestCertificateController.class" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/RestCertificateController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/RestDistrictController.class" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/RestDistrictController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/RestProvinceController.class" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/RestProvinceController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/RestTownController.class" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/rest/RestTownController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/service/impl/ProvinceServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/target/classes/com/globits/da/service/impl/ProvinceServiceImpl.class" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2QxoyLAjZprAGUgn5L9xcyHeB9G" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/hoant/Documents/Thuctap/svn_l1&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;baea5485658db36a0f750d1512fb41ac&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="DAApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <module name="da-app" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.globits.DAApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.globits.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.DAApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\hoant\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="SvnFileUrlMappingImpl">
+    <option name="myMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="C:\Users\hoant\Documents\Thuctap\svn_l1" />
+          <option name="myCopyRoot" value="C:\Users\hoant\Documents\Thuctap\svn_l1" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+    <option name="myMoreRealMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="C:\Users\hoant\Documents\Thuctap\svn_l1" />
+          <option name="myCopyRoot" value="C:\Users\hoant\Documents\Thuctap\svn_l1" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f9dc48bc-b3bc-483c-8aec-926375e76ace" name="Changes" comment="" />
+      <created>1686304846585</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1686304846585</updated>
+      <workItem from="1686304847837" duration="1135000" />
+      <workItem from="1686306005317" duration="237000" />
+      <workItem from="1686306525022" duration="1278000" />
+      <workItem from="1686361277502" duration="9678000" />
+      <workItem from="1686472958136" duration="961000" />
+      <workItem from="1686473965504" duration="1418000" />
+      <workItem from="1686492174077" duration="4607000" />
+      <workItem from="1686532709365" duration="24312000" />
+      <workItem from="1686624892604" duration="109000" />
+      <workItem from="1686625032406" duration="16391000" />
+      <workItem from="1686726386360" duration="6257000" />
+      <workItem from="1686803028806" duration="558000" />
+      <workItem from="1686803604256" duration="782000" />
+      <workItem from="1686805465049" duration="2248000" />
+      <workItem from="1686811023881" duration="14064000" />
+      <workItem from="1686878610938" duration="4059000" />
+      <workItem from="1686898362926" duration="8184000" />
+    </task>
+    <task id="LOCAL-00001" summary="#25 50%">
+      <created>1686825632722</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1686825632723</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="#25 50%" />
+    <option name="LAST_COMMIT_MESSAGE" value="#25 50%" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="javax.persistence.EntityNotFoundException" package="javax.persistence" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.IllegalArgumentException" package="java.lang" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="org.springframework.beans.factory.BeanCreationException" package="org.springframework.beans.factory" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="4" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

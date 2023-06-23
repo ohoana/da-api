@@ -1,0 +1,26 @@
+package com.globits.da.dto;
+
+import com.globits.core.domain.BaseObject;
+import com.globits.da.domain.Town;
+
+public class TownDto extends BaseObject {
+    private String name;
+
+    public TownDto() {
+    }
+
+    public TownDto(Town town) {
+        if(town != null) {
+            this.setId(town.getId());
+            this.name = town.getName();
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}

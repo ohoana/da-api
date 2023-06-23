@@ -1,0 +1,66 @@
+package com.globits.da.service.impl;
+
+import com.globits.da.domain.District;
+import com.globits.da.dto.DistrictDto;
+import com.globits.da.repository.DistrictRepository;
+import com.globits.da.service.DistrictService;
+import com.globits.da.service.ProvinceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class DistrictServiceImpl implements DistrictService {
+
+    @Autowired
+    private DistrictRepository repository;
+
+    @Autowired
+    private ProvinceService provinceService;
+
+    @Override
+    public DistrictDto getById(UUID id) {
+        District district = repository.getOne(id);
+        return new DistrictDto(district);
+    }
+
+    @Override
+    public List<DistrictDto> getAll() {
+        return repository.getAll();
+    }
+
+    @Override
+    public DistrictDto saveOrUpdate(DistrictDto dto, UUID id) {
+        if(dto != null) {
+            District district = null;
+            if(id != null) {
+                if(dto.getId() != null && !id.equals(dto.getId())) {
+                    return null;
+                }
+                district = repository.getOne(id);
+            }
+            if(district == null) {
+                district = new District();
+            }
+
+            district.setName(dto.getName());
+
+            district = repository.save(district);
+            if(district != null) {
+                return new DistrictDto(district);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean delete(UUID id) {
+        if(id != null) {
+            repository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+}

@@ -1,0 +1,14 @@
+package com.globits.da.service;
+
+import com.globits.da.dto.TownDto;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface TownService {
+    TownDto getById(UUID id);
+    List<TownDto> getAll();
+    TownDto saveOrUpdate(TownDto dto, UUID id);
+
+    Boolean delete(UUID id);
+}

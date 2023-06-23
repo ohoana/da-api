@@ -1,0 +1,23 @@
+package com.globits.da.domain;
+
+import com.globits.core.domain.BaseObject;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "tbl_town")
+public class Town extends BaseObject {
+    private static final long serialVersionUID = 1L;
+    @Column(name = "name")
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}

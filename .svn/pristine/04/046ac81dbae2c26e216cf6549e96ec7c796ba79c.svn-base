@@ -1,0 +1,37 @@
+package com.globits.da.dto;
+
+import com.globits.core.domain.BaseObject;
+import com.globits.da.domain.District;
+
+public class DistrictDto extends BaseObject {
+    private String name;
+
+    private ProvinceDto provinceDto;
+
+    public DistrictDto() {
+    }
+
+    public DistrictDto(District district) {
+        if(district != null) {
+            this.setId(district.getId());
+            this.name = district.getName();
+            this.provinceDto = new ProvinceDto(district.getProvince());
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ProvinceDto getProvinceDto() {
+        return provinceDto;
+    }
+
+    public void setProvinceDto(ProvinceDto provinceDto) {
+        this.provinceDto = provinceDto;
+    }
+}

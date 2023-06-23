@@ -1,0 +1,56 @@
+package com.globits.da.dto;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.globits.core.domain.BaseObject;
+import com.globits.da.domain.Certificate;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.Column;
+import java.time.LocalDateTime;
+
+public class CertificateDto extends BaseObject {
+    private String name;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime beginDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime expireDate;
+
+    public CertificateDto() {
+    }
+
+    public CertificateDto(Certificate certificate) {
+        if(certificate != null) {
+            this.setId(certificate.getId());
+            this.name = certificate.getName();
+            this.beginDate = certificate.getBeginDate();
+            this.expireDate = certificate.getExpireDate();
+        }
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalDateTime getBeginDate() {
+        return beginDate;
+    }
+
+    public void setBeginDate(LocalDateTime beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    public LocalDateTime getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(LocalDateTime expireDate) {
+        this.expireDate = expireDate;
+    }
+}

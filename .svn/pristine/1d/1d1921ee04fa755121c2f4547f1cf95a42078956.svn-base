@@ -1,0 +1,95 @@
+package com.globits.da.service.impl;
+
+import com.globits.da.domain.District;
+import com.globits.da.domain.Province;
+import com.globits.da.dto.DistrictDto;
+import com.globits.da.repository.DistrictRepository;
+import com.globits.da.repository.ProvinceRepository;
+import com.globits.da.service.DistrictService;
+import com.globits.da.service.ProvinceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class DistrictServiceImpl implements DistrictService {
+
+    @Autowired
+    private DistrictRepository districtRepository;
+
+    @Autowired
+    private ProvinceRepository provinceRepository;
+
+    @Override
+    public DistrictDto getById(UUID id) {
+        try {
+            District district = districtRepository.getOne(id);
+            return new DistrictDto(district);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<DistrictDto> getAll() {
+        return districtRepository.getAll();
+    }
+
+    @Override
+    public List<DistrictDto> getByProvinceId(UUID provinceId) {
+        return districtRepository.findByProvinceId(provinceId);
+    }
+
+    @Override
+    public DistrictDto saveOrUpdate(DistrictDto dto, UUID id) {
+        if(dto != null) {
+            District district = null;
+            if(id != null) {
+                if(dto.getId() != null && !id.equals(dto.getId())) {
+                    return null;
+                }
+                try {
+                    district = districtRepository.getOne(id);
+                } catch (EntityNotFoundException e) {
+                    return null;
+                }
+            }
+            if(district == null) {
+                district = new District();
+            }
+
+            try {
+                if(dto.getProvinceId() != null) {
+                    Province province = provinceRepository.getOne(dto.getProvinceId());
+                    district.setProvince(province);
+                }
+
+                district.setName(dto.getName());
+
+                district = districtRepository.save(district);
+
+                if(district != null) {
+                    return new DistrictDto(district);
+                }
+
+            } catch(EntityNotFoundException e) {
+                return null;
+            } catch (NullPointerException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean delete(UUID id) {
+        if(id != null) {
+            districtRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+}

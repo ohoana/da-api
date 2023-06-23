@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f9dc48bc-b3bc-483c-8aec-926375e76ace" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/Conferring.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/dto/ConferringDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/repository/ConferringRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/service/ConferringService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/service/impl/ConferringServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/Certificate.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/Certificate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/Employee.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/Employee.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/Province.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/domain/Province.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/dto/CertificateDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/dto/CertificateDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/repository/EmployeeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/repository/EmployeeRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/EmployeeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/EmployeeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/RestCertificateController.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/rest/RestCertificateController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/service/EmployeeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/service/EmployeeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/service/impl/CertificateServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/service/impl/CertificateServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/service/impl/EmployeeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/da-api/src/main/java/com/globits/da/service/impl/EmployeeServiceImpl.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="AnnotationType" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2QxoyLAjZprAGUgn5L9xcyHeB9G" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/hoant/Documents/Thuctap/svn_l1&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;baea5485658db36a0f750d1512fb41ac&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="DAApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <module name="da-app" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.globits.DAApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.globits.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.DAApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\hoant\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="SvnFileUrlMappingImpl">
+    <option name="myMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="C:\Users\hoant\Documents\Thuctap\svn_l1" />
+          <option name="myCopyRoot" value="C:\Users\hoant\Documents\Thuctap\svn_l1" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+    <option name="myMoreRealMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="C:\Users\hoant\Documents\Thuctap\svn_l1" />
+          <option name="myCopyRoot" value="C:\Users\hoant\Documents\Thuctap\svn_l1" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f9dc48bc-b3bc-483c-8aec-926375e76ace" name="Changes" comment="" />
+      <created>1686304846585</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1686304846585</updated>
+      <workItem from="1686304847837" duration="1135000" />
+      <workItem from="1686306005317" duration="237000" />
+      <workItem from="1686306525022" duration="1278000" />
+      <workItem from="1686361277502" duration="9678000" />
+      <workItem from="1686472958136" duration="961000" />
+      <workItem from="1686473965504" duration="1418000" />
+      <workItem from="1686492174077" duration="4607000" />
+      <workItem from="1686532709365" duration="24312000" />
+      <workItem from="1686624892604" duration="109000" />
+      <workItem from="1686625032406" duration="16391000" />
+      <workItem from="1686726386360" duration="6257000" />
+      <workItem from="1686803028806" duration="558000" />
+      <workItem from="1686803604256" duration="782000" />
+      <workItem from="1686805465049" duration="2248000" />
+      <workItem from="1686811023881" duration="14064000" />
+      <workItem from="1686878610938" duration="4059000" />
+      <workItem from="1686898362926" duration="9455000" />
+      <workItem from="1686975058189" duration="12443000" />
+      <workItem from="1687059234830" duration="47000" />
+      <workItem from="1687059490905" duration="1017000" />
+      <workItem from="1687060531533" duration="8187000" />
+      <workItem from="1687137124962" duration="16805000" />
+      <workItem from="1687243300889" duration="10281000" />
+      <workItem from="1687327604718" duration="8506000" />
+    </task>
+    <task id="LOCAL-00001" summary="#25 50%">
+      <created>1686825632722</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1686825632723</updated>
+    </task>
+    <task id="LOCAL-00002" summary="test 1-n uni">
+      <created>1686906997735</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1686906997735</updated>
+    </task>
+    <task id="LOCAL-00003" summary="employee has province, district, town address">
+      <created>1687252314481</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1687252314481</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="#25 50%" />
+    <MESSAGE value="test 1-n uni" />
+    <MESSAGE value="#26" />
+    <MESSAGE value="validate employee dto" />
+    <MESSAGE value="employee has province, district, town address" />
+    <option name="LAST_COMMIT_MESSAGE" value="employee has province, district, town address" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="javax.persistence.EntityNotFoundException" package="javax.persistence" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.IllegalArgumentException" package="java.lang" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="org.springframework.beans.factory.BeanCreationException" package="org.springframework.beans.factory" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="4" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
