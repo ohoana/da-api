@@ -1,16 +1,17 @@
 package com.globits.da.dto;
 
+import com.globits.core.domain.BaseObject;
 import com.globits.da.domain.Employee;
 import com.globits.da.validator.constraint.NotContainSpace;
 import com.globits.da.validator.constraint.NotDuplicate;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
+import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.*;
 import java.util.UUID;
 
-public class EmployeeDto {
-    private Integer id;
+public class EmployeeDto extends BaseObject {
     @NotContainSpace(groups = {OnUpdate.class, OnCreate.class})
     @NotDuplicate(groups = {OnCreate.class})
     private String code;
@@ -42,18 +43,9 @@ public class EmployeeDto {
     public EmployeeDto() {
     }
 
-    public EmployeeDto(Integer id, String code, String name, String email, String phone, Integer age) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.age = age;
-    }
-
     public EmployeeDto(Employee employee) {
-        if(employee != null) {
-            this.id = employee.getId();
+        if(!ObjectUtils.isEmpty(employee)) {
+            this.setId(employee.getId());
             this.code = employee.getCode();
             this.name = employee.getName();
             this.email = employee.getEmail();
@@ -63,14 +55,6 @@ public class EmployeeDto {
             this.districtId = employee.getDistrict().getId();
             this.townId = employee.getTown().getId();
         }
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getCode() {

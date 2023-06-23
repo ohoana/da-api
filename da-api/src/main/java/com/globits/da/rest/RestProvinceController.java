@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,7 +36,7 @@ public class RestProvinceController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<ProvinceDto> addProvince(@RequestBody ProvinceDto dto) {
+    public ResponseEntity<ProvinceDto> addProvince(@Valid @RequestBody ProvinceDto dto) {
         ProvinceDto result = provinceService.saveOrUpdate(dto, null);
         return ResponseEntity.ok()
                 .body(result);
@@ -43,7 +44,7 @@ public class RestProvinceController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<ProvinceDto> updateProvice(@RequestBody ProvinceDto dto,
+    public ResponseEntity<ProvinceDto> updateProvice(@Valid @RequestBody ProvinceDto dto,
                                                      @PathVariable UUID id) {
         ProvinceDto result = provinceService.saveOrUpdate(dto, id);
         return ResponseEntity.ok()

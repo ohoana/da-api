@@ -4,7 +4,7 @@ import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.EmployeeDto;
 import com.globits.da.dto.search.EmployeeSearchDto;
 import com.globits.da.service.EmployeeService;
-import com.globits.da.utils.exception.InvalidEmployeeDtoException;
+import com.globits.da.utils.exception.InvalidDtoException;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
 import org.apache.http.HttpResponse;
@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("/api/employee")
 public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
@@ -120,8 +120,8 @@ public class EmployeeController {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(InvalidEmployeeDtoException.class)
-    public Map<String, String> handlerInvalidEmployeeDto(InvalidEmployeeDtoException e) {
+    @ExceptionHandler(InvalidDtoException.class)
+    public Map<String, String> handlerInvalidEmployeeDto(InvalidDtoException e) {
         return e.getErrors();
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.sasl.SaslServer;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ public class RestCertificateController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<CertificateDto> addCertificate(@RequestBody CertificateDto dto) {
+    public ResponseEntity<CertificateDto> addCertificate(@Valid @RequestBody CertificateDto dto) {
         CertificateDto result = certificateService.saveOrUpdate(dto, null);
         return ResponseEntity.ok()
                 .body(result);
@@ -46,7 +47,7 @@ public class RestCertificateController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<CertificateDto> updateCertificate(@RequestBody CertificateDto dto,
+    public ResponseEntity<CertificateDto> updateCertificate(@Valid @RequestBody CertificateDto dto,
                                                             @PathVariable UUID id) {
         CertificateDto result = certificateService.saveOrUpdate(dto, id);
         return ResponseEntity.ok()

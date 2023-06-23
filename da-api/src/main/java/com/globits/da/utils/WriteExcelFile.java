@@ -22,6 +22,9 @@ public class WriteExcelFile {
     private static final int COLUMN_INDEX_EMAIL = 3;
     private static final int COLUMN_INDEX_PHONE = 4;
     private static final int COLUMN_INDEX_AGE = 5;
+    private static final int COLUMN_INDEX_PROVINCE = 6;
+    private static final int COLUMN_INDEX_DISTRICT = 7;
+    private static final int COLUMN_INDEX_TOWN = 8;
 
     public static Workbook writeToExcelFile(List<EmployeeDto> employeeDtoList) {
         Workbook workbook = new XSSFWorkbook();
@@ -50,7 +53,7 @@ public class WriteExcelFile {
     public static void writeEmployee(EmployeeDto employeeDto, XSSFRow row) {
         XSSFCell cell = null;
         cell = row.createCell(COLUMN_INDEX_ID);
-        cell.setCellValue(employeeDto.getId());
+        cell.setCellValue(employeeDto.getId().toString());
 
         cell = row.createCell(COLUMN_INDEX_CODE);
         cell.setCellValue(employeeDto.getCode());
@@ -66,6 +69,15 @@ public class WriteExcelFile {
 
         cell = row.createCell(COLUMN_INDEX_AGE);
         cell.setCellValue(employeeDto.getAge());
+
+        cell = row.createCell(COLUMN_INDEX_PROVINCE);
+        cell.setCellValue(employeeDto.getProvinceId().toString());
+
+        cell = row.createCell(COLUMN_INDEX_DISTRICT);
+        cell.setCellValue(employeeDto.getDistrictId().toString());
+
+        cell = row.createCell(COLUMN_INDEX_TOWN);
+        cell.setCellValue(employeeDto.getTownId().toString());
     }
 
     private static void writeHeader(Sheet sheet, int rowIdx) {
@@ -89,5 +101,14 @@ public class WriteExcelFile {
 
         cell = row.createCell(COLUMN_INDEX_AGE);
         cell.setCellValue("AGE");
+
+        cell = row.createCell(COLUMN_INDEX_PROVINCE);
+        cell.setCellValue("PROVINCE");
+
+        cell = row.createCell(COLUMN_INDEX_DISTRICT);
+        cell.setCellValue("DISTRICT");
+
+        cell = row.createCell(COLUMN_INDEX_TOWN);
+        cell.setCellValue("TOWN");
     }
 }

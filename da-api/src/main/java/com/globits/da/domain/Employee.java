@@ -8,10 +8,13 @@ import java.util.List;
 @Entity
 @Table(name = "tbl_employee")
 public class Employee extends BaseObject {
+
+    private static final long serialVersionUID = 1L;
+
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "code")
+    @Column(name = "code", nullable = false)
     private String code;
 
     @Column(name = "email", nullable = false)

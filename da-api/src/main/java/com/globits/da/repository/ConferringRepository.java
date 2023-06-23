@@ -15,11 +15,17 @@ public interface ConferringRepository extends JpaRepository<Conferring, UUID> {
     @Query("SELECT new com.globits.da.dto.ConferringDto(entity) FROM Conferring entity")
     List<ConferringDto> getAll();
 
-    @Query("SELECT new com.globits.da.dto.ConferringDto(entity) FROM Conferring entity WHERE entity.employee.id = ?1")
+    @Query("SELECT new com.globits.da.dto.ConferringDto(entity) FROM Conferring entity " +
+            "WHERE entity.employee.id = ?1")
     List<ConferringDto> getByEmployeeId(UUID employeeId);
 
     @Query("SELECT COUNT(entity) FROM Conferring entity " +
-            "WHERE entity.expireDate >= CURRENT DATE AND entity.employee.id = ?1 " +
+            "WHERE entity.expireDate >= current_date AND entity.employee.id = ?1 " +
             "AND entity.certificate.id = ?2")
     Integer countCertificateInUse(UUID employeeId, UUID certificateId);
+
+    @Query("SELECT new com.globits.da.dto.ConferringDto(entity) FROM Conferring entity " +
+            "WHERE entity.employee.id = ?1 AND entity.certificate.id = ?2 AND entity.province.id = ?3 " +
+            "AND entity.expireDate >= current_date ")
+    ConferringDto getCertificateInUseByProvinceId(UUID employeeId, UUID certificateId, UUID provinceId);
 }

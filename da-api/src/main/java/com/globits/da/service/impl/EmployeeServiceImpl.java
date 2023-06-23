@@ -12,7 +12,7 @@ import com.globits.da.repository.ProvinceRepository;
 import com.globits.da.repository.TownRepository;
 import com.globits.da.service.EmployeeService;
 import com.globits.da.utils.WriteExcelFile;
-import com.globits.da.utils.exception.InvalidEmployeeDtoException;
+import com.globits.da.utils.exception.InvalidDtoException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
@@ -141,7 +141,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDto saveOrUpdate(EmployeeDto employeeDto, UUID id){
         if(!ObjectUtils.isEmpty(employeeDto)) {
-            Employee employee = new Employee();
+            Employee employee = null;
             if (!ObjectUtils.isEmpty(id)) {
                 if(!ObjectUtils.isEmpty(employeeDto.getDistrictId()) && !id.equals(employeeDto.getId())) {
                     return null;
@@ -149,6 +149,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 try {
                     employee = employeeRepository.getOne(id);
                 } catch(EntityNotFoundException e) {
+                    e.printStackTrace();
                     return null;
                 }
             }
@@ -201,11 +202,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         HashMap<String, String> errors = new HashMap<>();
         if(!town.getDistrict().getId().equals(district.getId())) {
             errors.put("townId", "Town must belong to a district");
-            throw new InvalidEmployeeDtoException(errors);
+            throw new InvalidDtoException(errors);
         }
         if(!district.getProvince().getId().equals(province.getId())) {
             errors.put("districtId", "District must belong to a province");
-            throw new InvalidEmployeeDtoException(errors);
+            throw new InvalidDtoException(errors);
         }
         return true;
     }

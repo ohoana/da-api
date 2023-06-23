@@ -5,11 +5,14 @@ import com.globits.da.domain.Province;
 import org.springframework.security.core.parameters.P;
 import org.springframework.util.ObjectUtils;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProvinceDto extends BaseObject {
+    @NotBlank(message = "Name must not be empty")
     private String name;
     private List<DistrictDto> districtDtos;
 

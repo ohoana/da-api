@@ -6,9 +6,11 @@ import com.globits.da.domain.Certificate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 public class CertificateDto extends BaseObject {
+    @NotBlank(message = "Name must not be empty")
     private String name;
 
     public CertificateDto() {

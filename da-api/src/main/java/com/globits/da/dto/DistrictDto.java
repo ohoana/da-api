@@ -5,14 +5,18 @@ import com.globits.da.domain.District;
 import org.springframework.security.core.parameters.P;
 import org.springframework.util.ObjectUtils;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DistrictDto extends BaseObject {
+    @NotBlank(message = "Name must not be empty")
     private String name;
 
+    @NotNull(message = "Province must not be null")
     private UUID provinceId;
 
     List<TownDto> townDtos;
