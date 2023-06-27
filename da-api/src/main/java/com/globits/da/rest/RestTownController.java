@@ -4,9 +4,12 @@ import com.globits.da.AFFakeConstants;
 import com.globits.da.domain.Town;
 import com.globits.da.dto.TownDto;
 import com.globits.da.service.TownService;
+import com.globits.da.validator.marker.OnCreate;
+import com.globits.da.validator.marker.OnUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -45,7 +48,10 @@ public class RestTownController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<TownDto> addTown(@Valid @RequestBody TownDto dto) {
+    public ResponseEntity<TownDto> add(@Validated(OnCreate.class) @RequestBody TownDto dto) {
+        if(!townService.isValidDto(dto)) {
+            return ResponseEntity.badRequest().build();
+        }
         TownDto result = townService.saveOrUpdate(dto, null);
         return ResponseEntity.ok()
                 .body(result);
@@ -53,8 +59,11 @@ public class RestTownController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<TownDto> updateTown(@Valid @RequestBody TownDto dto,
+    public ResponseEntity<TownDto> update(@Validated(OnUpdate.class) @RequestBody TownDto dto,
                                                       @PathVariable UUID id) {
+        if(!townService.isValidDto(dto)) {
+            return ResponseEntity.badRequest().build();
+        }
         TownDto result = townService.saveOrUpdate(dto, id);
         return ResponseEntity.ok()
                 .body(result);

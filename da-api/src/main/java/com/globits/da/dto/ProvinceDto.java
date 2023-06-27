@@ -24,13 +24,13 @@ public class ProvinceDto extends BaseObject {
         if(!ObjectUtils.isEmpty(province)) {
             this.setId(province.getId());
             this.name = province.getName();
-//            if(!ObjectUtils.isEmpty(province.getDistricts())) {
-//                this.districtDtos = province.getDistricts().stream().map((item) -> {
-//                    return new DistrictDto(item);
-//                }).collect(Collectors.toList());
-//            } else {
-//                this.districtDtos = new ArrayList<>();
-//            }
+            if(!ObjectUtils.isEmpty(province.getDistricts())) {
+                this.districtDtos = province.getDistricts().stream().map((item) -> {
+                    return new DistrictDto(item);
+                }).collect(Collectors.toList());
+            } else {
+                this.districtDtos = new ArrayList<>();
+            }
         }
     }
 

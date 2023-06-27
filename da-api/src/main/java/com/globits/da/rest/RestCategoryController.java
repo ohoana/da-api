@@ -25,7 +25,6 @@ import com.globits.da.service.CategoryService;
 public class RestCategoryController {
 	@Autowired
 	CategoryService categoryService;
-	 
 
 	@Secured({  AFFakeConstants.ROLE_ADMIN, AFFakeConstants.ROLE_SUPER_ADMIN })
 	@RequestMapping(value = "/{pageIndex}/{pageSize}", method = RequestMethod.GET)

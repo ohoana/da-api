@@ -1,5 +1,6 @@
 package com.globits.da.service.impl;
 
+import com.globits.core.service.impl.GenericServiceImpl;
 import com.globits.da.domain.District;
 import com.globits.da.domain.Employee;
 import com.globits.da.domain.Province;
@@ -13,9 +14,11 @@ import com.globits.da.repository.TownRepository;
 import com.globits.da.service.EmployeeService;
 import com.globits.da.utils.WriteExcelFile;
 import com.globits.da.utils.exception.InvalidDtoException;
+import com.globits.da.validator.marker.OnCreate;
+import com.globits.da.validator.marker.OnUpdate;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.MethodParameter;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,20 +26,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.annotation.Validated;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
 import javax.validation.Validator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> implements EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
@@ -50,7 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private TownRepository townRepository;
 
     @Autowired
-    private EntityManager manager;
+    private Validator validator;
 
     @Override
     public EmployeeDto findByCode(String code) {
@@ -60,17 +61,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Page<EmployeeDto> getPage(int pageIndex, int pageSize) {
         Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
-        return employeeRepository.getListPage(pageable);
+        return employeeRepository.getPage(pageable);
     }
 
     @Override
-    public Page<EmployeeDto> searchEmployee(EmployeeSearchDto searchDto) {
+    public Page<EmployeeDto> search(EmployeeSearchDto searchDto) {
         if(ObjectUtils.isEmpty(searchDto)) {
             return null;
         }
 
-        int pageIndex = Math.max(searchDto.getPageIndex() - 1, 0);
-        int pageSize = searchDto.getPageSize();
+        Integer pageIndex = Math.max(searchDto.getPageIndex() - 1, 0);
+        Integer pageSize = searchDto.getPageSize();
 
         String whereSql = "";
 
@@ -127,15 +128,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         List<EmployeeDto> employeeDtoList = sqlQuery.getResultList();
         long count = (long) sqlCountQuery.getSingleResult();
-
-        Pageable pageable = PageRequest.of(pageIndex, pageSize);
-        Page<EmployeeDto> result = new PageImpl<>(employeeDtoList, pageable, count);
-        return result;
+        if(pageSize > 0) {
+            Pageable pageable = PageRequest.of(pageIndex, pageSize);
+            Page<EmployeeDto> result = new PageImpl<>(employeeDtoList, pageable, count);
+            return result;
+        }
+        return null;
     }
 
     @Override
-    public List<EmployeeDto> getAllEmployee() {
-        return employeeRepository.getAllEmployee();
+    public List<EmployeeDto> getAll() {
+        return employeeRepository.getAll();
     }
 
     @Override
@@ -143,45 +146,83 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(!ObjectUtils.isEmpty(employeeDto)) {
             Employee employee = null;
             if (!ObjectUtils.isEmpty(id)) {
-                if(!ObjectUtils.isEmpty(employeeDto.getDistrictId()) && !id.equals(employeeDto.getId())) {
+                if(!ObjectUtils.isEmpty(employeeDto.getId()) && !id.equals(employeeDto.getId())) {
                     return null;
                 }
-                try {
-                    employee = employeeRepository.getOne(id);
-                } catch(EntityNotFoundException e) {
-                    e.printStackTrace();
-                    return null;
-                }
+                employee = employeeRepository.getOne(id);
             }
             if(ObjectUtils.isEmpty(employee)) {
                 employee = new Employee();
             }
-
-            employee.setCode(employeeDto.getCode());
-            employee.setName(employeeDto.getName());
-            employee.setEmail(employeeDto.getEmail());
-            employee.setPhone(employeeDto.getPhone());
-            employee.setAge(employeeDto.getAge());
-            if(!ObjectUtils.isEmpty(employeeDto.getTownId())
-            && !ObjectUtils.isEmpty(employeeDto.getProvinceId())
-            && !ObjectUtils.isEmpty(employeeDto.getDistrictId())
-            && isValidEmployee(employeeDto)) {
-                employee.setProvince(provinceRepository.getOne(employeeDto.getProvinceId()));
-                employee.setDistrict(districtRepository.getOne(employeeDto.getDistrictId()));
-                employee.setTown(townRepository.getOne(employeeDto.getTownId()));
-            }
-
-            employee = employeeRepository.save(employee);
-            if(!ObjectUtils.isEmpty(employee)) {
-                return new EmployeeDto(employee);
+            try {
+                employee.setCode(employeeDto.getCode());
+                employee.setName(employeeDto.getName());
+                employee.setEmail(employeeDto.getEmail());
+                employee.setPhone(employeeDto.getPhone());
+                employee.setAge(employeeDto.getAge());
+                if(!ObjectUtils.isEmpty(employeeDto.getTownId())
+                        && !ObjectUtils.isEmpty(employeeDto.getDistrictId())
+                        && !ObjectUtils.isEmpty(employeeDto.getProvinceId())) {
+                    employee.setProvince(provinceRepository.getOne(employeeDto.getProvinceId()));
+                    employee.setDistrict(districtRepository.getOne(employeeDto.getDistrictId()));
+                    employee.setTown(townRepository.getOne(employeeDto.getTownId()));
+                }
+                employee = employeeRepository.save(employee);
+                if(!ObjectUtils.isEmpty(employee)) {
+                    return new EmployeeDto(employee);
+                }
+            } catch (EntityNotFoundException e) {
+                Map<String, String> errors = new HashMap<>();
+                errors.put("Employee", "Not found!");
+                throw new InvalidDtoException(errors);
             }
         }
         return null;
     }
 
     @Override
-    public Boolean delete(UUID id) {
-        if(!ObjectUtils.isEmpty(id)) {
+    @Transactional
+    public List<EmployeeDto> saveList(List<EmployeeDto> employeeDtos) {
+        List<EmployeeDto> result = new ArrayList<>();
+        int lineIdx = 1;
+        if(!ObjectUtils.isEmpty(employeeDtos)) {
+            List<Employee> employees = new ArrayList<>();
+            for(EmployeeDto employeeDto : employeeDtos) {
+                try {
+                    if(isValidEmployee(employeeDto, OnCreate.class)) {
+                        Employee employee = new Employee();
+                        employee.setCode(employeeDto.getCode());
+                        employee.setName(employeeDto.getName());
+                        employee.setEmail(employeeDto.getEmail());
+                        employee.setPhone(employeeDto.getPhone());
+                        employee.setAge(employeeDto.getAge());
+                        if(!ObjectUtils.isEmpty(employeeDto.getTownId())
+                                && !ObjectUtils.isEmpty(employeeDto.getDistrictId())
+                                && !ObjectUtils.isEmpty(employeeDto.getProvinceId())) {
+                            employee.setProvince(provinceRepository.getOne(employeeDto.getProvinceId()));
+                            employee.setDistrict(districtRepository.getOne(employeeDto.getDistrictId()));
+                            employee.setTown(townRepository.getOne(employeeDto.getTownId()));
+                        }
+                        employees.add(employee);
+                        if(!ObjectUtils.isEmpty(employee)) {
+                            result.add(new EmployeeDto(employee));
+                        }
+                    }
+                } catch (InvalidDtoException e) {
+                    Map<String, String> errors = new HashMap<>();
+                    errors.put("Excel", "at line " + lineIdx + e.getErrors().toString());
+                    throw new InvalidDtoException(errors);
+                }
+                lineIdx++;
+            }
+            employeeRepository.saveAll(employees);
+        }
+        return result;
+    }
+
+    @Override
+    public Boolean deleteById(UUID id) {
+        if(!ObjectUtils.isEmpty(id) && employeeRepository.existsById(id)) {
             employeeRepository.deleteById(id);
             return true;
         }
@@ -190,22 +231,74 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Workbook getExcel() {
-        Workbook workbook = WriteExcelFile.writeToExcelFile(employeeRepository.getAllEmployee());
+        Workbook workbook = WriteExcelFile.writeToExcelFile(employeeRepository.getAll());
         return workbook;
     }
 
     @Override
-    public Boolean isValidEmployee(EmployeeDto employeeDto) {
-        Province province = provinceRepository.getOne(employeeDto.getProvinceId());
-        District district = districtRepository.getOne(employeeDto.getDistrictId());
-        Town town = townRepository.getOne(employeeDto.getTownId());
+    public Boolean isValidEmployee(EmployeeDto employeeDto, Class group) {
         HashMap<String, String> errors = new HashMap<>();
-        if(!town.getDistrict().getId().equals(district.getId())) {
-            errors.put("townId", "Town must belong to a district");
-            throw new InvalidDtoException(errors);
+        Set<ConstraintViolation<EmployeeDto>> violations = validator.validate(employeeDto, group);
+        if(!violations.isEmpty()) {
+            for(ConstraintViolation<EmployeeDto> constraintViolation : violations) {
+                errors.put(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage());
+            }
         }
-        if(!district.getProvince().getId().equals(province.getId())) {
+
+        String sql = "SELECT COUNT(entity) FROM Employee as entity WHERE entity.code = :code ";
+        Employee employee = null;
+        if (employeeRepository.existsById(employeeDto.getId())) {
+            employee = employeeRepository.getOne(employeeDto.getId());
+            sql += "AND entity.id != :id";
+        }
+
+        Query query = manager.createQuery(sql);
+
+        query.setParameter("code", employeeDto.getCode());
+
+        if(!ObjectUtils.isEmpty(employee)) {
+            query.setParameter("id", employeeDto.getId());
+        }
+
+        long count = (long) query.getSingleResult();
+
+        if(count > 0) {
+            errors.put("code", "Code must not be duplicated");
+        }
+        Province province = null;
+        District district = null;
+        Town town = null;
+        if(!ObjectUtils.isEmpty(employeeDto.getProvinceId())) {
+            if (provinceRepository.existsById(employeeDto.getProvinceId())) {
+                province = provinceRepository.getOne(employeeDto.getProvinceId());
+            } else {
+                errors.put("Province", "Not found!");
+            }
+        }
+        if (!ObjectUtils.isEmpty(employeeDto.getDistrictId())) {
+            if (districtRepository.existsById(employeeDto.getDistrictId())) {
+                district = districtRepository.getOne(employeeDto.getDistrictId());
+            } else {
+                errors.put("District", "Not found!");
+            }
+        }
+        if (!ObjectUtils.isEmpty(employeeDto.getTownId())) {
+            if (townRepository.existsById(employeeDto.getTownId())) {
+                town = townRepository.getOne(employeeDto.getTownId());
+            } else {
+                errors.put("Town", "Not found!");
+            }
+        }
+        if (!ObjectUtils.isEmpty(district) && !ObjectUtils.isEmpty(town)
+                && !district.getId().equals(town.getDistrict().getId())) {
+            errors.put("townId", "Town must belong to a district");
+        }
+        if (!ObjectUtils.isEmpty(province) && !ObjectUtils.isEmpty(district)
+                && !province.getId().equals(district.getProvince().getId())) {
             errors.put("districtId", "District must belong to a province");
+        }
+
+        if(errors.size() > 0) {
             throw new InvalidDtoException(errors);
         }
         return true;

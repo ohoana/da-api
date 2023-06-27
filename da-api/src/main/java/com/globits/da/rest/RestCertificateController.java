@@ -39,7 +39,7 @@ public class RestCertificateController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<CertificateDto> addCertificate(@Valid @RequestBody CertificateDto dto) {
+    public ResponseEntity<CertificateDto> add(@Valid @RequestBody CertificateDto dto) {
         CertificateDto result = certificateService.saveOrUpdate(dto, null);
         return ResponseEntity.ok()
                 .body(result);
@@ -47,7 +47,7 @@ public class RestCertificateController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<CertificateDto> updateCertificate(@Valid @RequestBody CertificateDto dto,
+    public ResponseEntity<CertificateDto> update(@Valid @RequestBody CertificateDto dto,
                                                             @PathVariable UUID id) {
         CertificateDto result = certificateService.saveOrUpdate(dto, id);
         return ResponseEntity.ok()
@@ -56,7 +56,7 @@ public class RestCertificateController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Boolean> updateCertificate(@PathVariable UUID id) {
+    public ResponseEntity<Boolean> deleteById(@PathVariable UUID id) {
         Boolean result = certificateService.delete(id);
         return ResponseEntity.ok()
                 .body(result);

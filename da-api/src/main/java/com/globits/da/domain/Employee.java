@@ -14,7 +14,7 @@ public class Employee extends BaseObject {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "code", nullable = false)
+    @Column(name = "code", nullable = false, unique = true)
     private String code;
 
     @Column(name = "email", nullable = false)
@@ -30,7 +30,6 @@ public class Employee extends BaseObject {
     @JoinColumn(name = "province_id")
     private Province province;
 
-
     @ManyToOne
     @JoinColumn(name = "district_id")
     private District district;
@@ -40,7 +39,7 @@ public class Employee extends BaseObject {
     private Town town;
 
     @OneToMany(mappedBy = "employee")
-    private List<Conferring> conferrings;
+    private List<ReleaseInfor> certificates;
 
     public String getName() {
         return name;
@@ -106,11 +105,11 @@ public class Employee extends BaseObject {
         this.town = town;
     }
 
-    public List<Conferring> getConferrings() {
-        return conferrings;
+    public List<ReleaseInfor> getCertificates() {
+        return certificates;
     }
 
-    public void setConferrings(List<Conferring> conferrings) {
-        this.conferrings = conferrings;
+    public void setCertificates(List<ReleaseInfor> certificates) {
+        this.certificates = certificates;
     }
 }

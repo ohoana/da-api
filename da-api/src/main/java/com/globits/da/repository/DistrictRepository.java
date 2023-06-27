@@ -12,10 +12,10 @@ import java.util.UUID;
 @Repository
 public interface DistrictRepository extends JpaRepository<District, UUID> {
 
-    @Query("select new com.globits.da.dto.DistrictDto(entity) from District entity")
+    @Query("SELECT new com.globits.da.dto.DistrictDto(entity) FROM District entity")
     List<DistrictDto> getAll();
 
-    @Query("select new com.globits.da.dto.DistrictDto(entity) from District entity where entity.province.id = ?1")
+    @Query("SELECT new com.globits.da.dto.DistrictDto(entity) FROM District entity WHERE entity.province.id = ?1")
     List<DistrictDto> findByProvinceId(UUID proviceId);
 }
 

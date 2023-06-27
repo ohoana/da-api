@@ -1,23 +1,22 @@
 package com.globits.da.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.globits.da.domain.District;
 import com.globits.da.domain.Province;
-import com.globits.da.dto.DistrictDto;
 import com.globits.da.dto.ProvinceDto;
-import com.globits.da.repository.DistrictRepository;
 import com.globits.da.repository.ProvinceRepository;
 import com.globits.da.service.DistrictService;
 import com.globits.da.service.ProvinceService;
+import com.globits.da.utils.exception.InvalidDtoException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ProvinceServiceImpl implements ProvinceService {
@@ -40,41 +39,35 @@ public class ProvinceServiceImpl implements ProvinceService {
 
     @Override
     public List<ProvinceDto> getAll() {
-        return provinceRepository.getALlProvince();
+        return provinceRepository.getAll();
     }
 
     @Override
     public ProvinceDto saveOrUpdate(ProvinceDto dto, UUID id) {
         if(!ObjectUtils.isEmpty(dto)) {
             Province province = null;
-            //update
             if(!ObjectUtils.isEmpty(id)) {
                 if(!ObjectUtils.isEmpty(dto.getId()) && !id.equals(dto.getId())) {
                     return null;
                 }
-                try {
-                    province = provinceRepository.getOne(id);
-                } catch (EntityNotFoundException e) {
-                    e.printStackTrace();
-                    return null;
-                }
+                province = provinceRepository.getOne(id);
             }
             if(ObjectUtils.isEmpty(province)) {
                 province = new Province();
             }
-
-            province.setName(dto.getName());
-
-            province = provinceRepository.save(province);
-
-            List<District> districts = districtService.saveOrUpdateList(dto.getDistrictDtos(), province);
-
-            province.setDistricts(districts);
-
-            province = provinceRepository.save(province);
-
-            if(!ObjectUtils.isEmpty(province)) {
-                return new ProvinceDto(province);
+            try {
+                province.setName(dto.getName());
+                province = provinceRepository.save(province);
+                List<District> districts = districtService.saveOrUpdateList(dto.getDistrictDtos(), province);
+                province.setDistricts(districts);
+                province = provinceRepository.save(province);
+                if(!ObjectUtils.isEmpty(province)) {
+                    return new ProvinceDto(province);
+                }
+            } catch (EntityNotFoundException e) {
+                Map<String, String> errors = new HashMap<>();
+                errors.put("Province", "Not found!");
+                throw new InvalidDtoException(errors);
             }
         }
         return null;
@@ -83,8 +76,12 @@ public class ProvinceServiceImpl implements ProvinceService {
     @Override
     public Boolean delete(UUID id) {
         if(!ObjectUtils.isEmpty(id)) {
-            provinceRepository.deleteById(id);
-            return true;
+            try {
+                provinceRepository.deleteById(id);
+                return true;
+            } catch (EmptyResultDataAccessException e) {
+                return false;
+            }
         }
         return false;
     }

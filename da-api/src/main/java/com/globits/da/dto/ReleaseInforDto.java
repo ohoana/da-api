@@ -2,16 +2,14 @@ package com.globits.da.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.globits.core.domain.BaseObject;
-import com.globits.da.domain.Conferring;
+import com.globits.da.domain.ReleaseInfor;
 import org.springframework.util.ObjectUtils;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class ConferringDto extends BaseObject {
+public class ReleaseInforDto extends BaseObject {
 
     @NotNull(message = "Employee must not be null")
     private UUID employeeId;
@@ -30,17 +28,17 @@ public class ConferringDto extends BaseObject {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expireDate;
 
-    public ConferringDto() {
+    public ReleaseInforDto() {
     }
 
-    public ConferringDto(Conferring conferring) {
-        if(!ObjectUtils.isEmpty(conferring)) {
-            this.setId(conferring.getId());
-            this.certificateId = conferring.getCertificate().getId();
-            this.provinceId = conferring.getProvince().getId();
-            this.employeeId = conferring.getEmployee().getId();
-            this.beginDate = conferring.getBeginDate();
-            this.expireDate = conferring.getExpireDate();
+    public ReleaseInforDto(ReleaseInfor releaseInfor) {
+        if(!ObjectUtils.isEmpty(releaseInfor)) {
+            this.setId(releaseInfor.getId());
+            this.certificateId = releaseInfor.getCertificate().getId();
+            this.provinceId = releaseInfor.getProvince().getId();
+            this.employeeId = releaseInfor.getEmployee().getId();
+            this.beginDate = releaseInfor.getBeginDate();
+            this.expireDate = releaseInfor.getExpireDate();
         }
     }
 

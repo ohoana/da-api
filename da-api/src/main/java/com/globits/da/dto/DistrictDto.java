@@ -2,6 +2,8 @@ package com.globits.da.dto;
 
 import com.globits.core.domain.BaseObject;
 import com.globits.da.domain.District;
+import com.globits.da.validator.marker.OnCreate;
+import com.globits.da.validator.marker.OnUpdate;
 import org.springframework.security.core.parameters.P;
 import org.springframework.util.ObjectUtils;
 
@@ -13,10 +15,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DistrictDto extends BaseObject {
-    @NotBlank(message = "Name must not be empty")
+    @NotBlank(message = "Name must not be empty",
+            groups = {OnCreate.class, OnUpdate.class})
     private String name;
 
-    @NotNull(message = "Province must not be null")
+    @NotNull(message = "Province must not be null",
+            groups = {OnCreate.class})
     private UUID provinceId;
 
     List<TownDto> townDtos;
@@ -29,14 +33,14 @@ public class DistrictDto extends BaseObject {
             this.setId(district.getId());
             this.name = district.getName();
             this.provinceId = district.getProvince().getId();
-//            if(!ObjectUtils.isEmpty(district.getTowns())) {
-//                this.townDtos = district.getTowns().stream()
-//                        .map(item -> {
-//                            return new TownDto(item);
-//                        }).collect(Collectors.toList());
-//            } else {
-//                this.townDtos = new ArrayList<>();
-//            }
+            if(!ObjectUtils.isEmpty(district.getTowns())) {
+                this.townDtos = district.getTowns().stream()
+                        .map(item -> {
+                            return new TownDto(item);
+                        }).collect(Collectors.toList());
+            } else {
+                this.townDtos = new ArrayList<>();
+            }
         }
     }
 

@@ -4,11 +4,13 @@ import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.EmployeeDto;
 import com.globits.da.dto.search.EmployeeSearchDto;
 import com.globits.da.service.EmployeeService;
+import com.globits.da.utils.ReadingExcelFile;
 import com.globits.da.utils.exception.InvalidDtoException;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
 import org.apache.http.HttpResponse;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -18,36 +20,38 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/employee")
-public class EmployeeController {
+public class RestEmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
+    @Autowired
+    private ReadingExcelFile readingExcelFile;
+
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<EmployeeDto>> getAllEmployee() {
-        List<EmployeeDto> result = employeeService.getAllEmployee();
+    public ResponseEntity<List<EmployeeDto>> getAll() {
+        List<EmployeeDto> result = employeeService.getAll();
         return new ResponseEntity<List<EmployeeDto>>(result, HttpStatus.OK);
     }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/paging/{pageIndex}/{pageSize}", method = RequestMethod.GET)
-    public ResponseEntity<Page<EmployeeDto>> getEmployeeInPage(@PathVariable Integer pageIndex,
+    public ResponseEntity<Page<EmployeeDto>> getPage(@PathVariable Integer pageIndex,
                                                                @PathVariable Integer pageSize) {
         Page<EmployeeDto> result = employeeService.getPage(pageIndex, pageSize);
         return new ResponseEntity<Page<EmployeeDto>>(result, HttpStatus.OK);
@@ -55,8 +59,8 @@ public class EmployeeController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public ResponseEntity<Page<EmployeeDto>> getEmployeeBySearch(@RequestBody EmployeeSearchDto dto) {
-        Page<EmployeeDto> result = employeeService.searchEmployee(dto);
+    public ResponseEntity<Page<EmployeeDto>> getBySearchDto(@RequestBody EmployeeSearchDto dto) {
+        Page<EmployeeDto> result = employeeService.search(dto);
         return ResponseEntity.ok()
                 .body(result);
     }
@@ -89,23 +93,48 @@ public class EmployeeController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<EmployeeDto> addEmployee(@Validated(OnCreate.class) @RequestBody EmployeeDto employeeDto) {
-        EmployeeDto result = employeeService.saveOrUpdate(employeeDto, null);
+    public ResponseEntity<EmployeeDto> add(@Validated(OnCreate.class) @RequestBody EmployeeDto employeeDto) {
+        EmployeeDto result = null;
+        if(employeeService.isValidEmployee(employeeDto, OnCreate.class)) {
+            result = employeeService.saveOrUpdate(employeeDto, null);
+        }
         return new ResponseEntity<EmployeeDto>(result, HttpStatus.OK);
     }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
+    @RequestMapping(value = "/excel", method = RequestMethod.POST)
+    public ResponseEntity<List<EmployeeDto>> addByExcelFile(@RequestParam("file")MultipartFile file) {
+        List<EmployeeDto> result = new ArrayList<>();
+        if(file.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(result);
+        }
+        try {
+            XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
+            List<EmployeeDto> dtos = readingExcelFile.getEmployee(workbook);
+            result = employeeService.saveList(dtos);
+        } catch (IOException e) {
+            System.out.println("error while reading file from addEmployeeExcelFile");
+        }
+        return ResponseEntity.ok()
+                .body(result);
+    }
+
+    @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<EmployeeDto> updateEmployee(@Validated(OnUpdate.class) @RequestBody EmployeeDto employeeDto,
+    public ResponseEntity<EmployeeDto> update(@Validated(OnUpdate.class) @RequestBody EmployeeDto employeeDto,
                                                       @PathVariable UUID id) {
-        EmployeeDto result = employeeService.saveOrUpdate(employeeDto, id);
+        EmployeeDto result = null;
+        if(employeeService.isValidEmployee(employeeDto, OnUpdate.class)) {
+            result = employeeService.saveOrUpdate(employeeDto, id);
+        }
         return new ResponseEntity<EmployeeDto>(result, HttpStatus.OK);
     }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Boolean> deleteEmployee(@PathVariable(name = "id") UUID id) {
-        Boolean result = employeeService.delete(id);
+    public ResponseEntity<Boolean> deleteById(@PathVariable(name = "id") UUID id) {
+        Boolean result = employeeService.deleteById(id);
         return new ResponseEntity<Boolean>(result, HttpStatus.OK);
     }
 
@@ -117,11 +146,5 @@ public class EmployeeController {
             mapError.put(error.getField(), error.getDefaultMessage());
         });
         return mapError;
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(InvalidDtoException.class)
-    public Map<String, String> handlerInvalidEmployeeDto(InvalidDtoException e) {
-        return e.getErrors();
     }
 }

@@ -1,14 +1,13 @@
 package com.globits.da.domain;
 
 import com.globits.core.domain.BaseObject;
-import org.springframework.util.ObjectUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tbl_conferring")
-public class Conferring extends BaseObject {
+@Table(name = "tbl_release_infor")
+public class ReleaseInfor extends BaseObject {
     private static final long serialVersionUID = 1L;
 
     @ManyToOne
@@ -28,7 +27,7 @@ public class Conferring extends BaseObject {
     @Column(name = "expire_date")
     private LocalDateTime expireDate;
 
-    public Conferring() {
+    public ReleaseInfor() {
 
     }
 

@@ -12,21 +12,20 @@ import javax.validation.constraints.*;
 import java.util.UUID;
 
 public class EmployeeDto extends BaseObject {
-    @NotContainSpace(groups = {OnUpdate.class, OnCreate.class})
-    @NotDuplicate(groups = {OnCreate.class})
+    @NotContainSpace(groups = {OnCreate.class, OnUpdate.class})
     private String code;
     @NotBlank(message = "Name must not be empty",
-            groups = {OnUpdate.class, OnCreate.class})
+            groups = {OnCreate.class, OnUpdate.class})
     private String name;
 
     @Pattern(regexp = "^[\\w|.]+@[\\w]+\\.[\\w]{2,3}$", message = "Email is not valid",
-            groups = {OnUpdate.class, OnCreate.class})
+            groups = {OnCreate.class, OnUpdate.class})
     private String email;
     @Pattern(regexp = "(84|0[3|5|7|8|9])+([0-9]{8})", message = "Phone-number is not valid",
-            groups = {OnUpdate.class, OnCreate.class})
+            groups = {OnCreate.class, OnUpdate.class})
     private String phone;
-    @Min(value = 0,message = "Age must not be negative",
-            groups = {OnUpdate.class, OnCreate.class})
+    @Min(value = 1,message = "Age must not be negative",
+            groups = {OnCreate.class, OnUpdate.class})
     private Integer age;
 
     @NotNull(message = "Province must not be empty",

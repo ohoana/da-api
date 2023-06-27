@@ -3,9 +3,12 @@ package com.globits.da.rest;
 import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.DistrictDto;
 import com.globits.da.service.DistrictService;
+import com.globits.da.validator.marker.OnCreate;
+import com.globits.da.validator.marker.OnUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -43,7 +46,10 @@ public class RestDistrictController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<DistrictDto> addDistrict(@Valid @RequestBody DistrictDto dto) {
+    public ResponseEntity<DistrictDto> add(@Validated(OnCreate.class) @RequestBody DistrictDto dto) {
+        if(!districtService.isValidDto(dto)) {
+            return ResponseEntity.notFound().build();
+        }
         DistrictDto result = districtService.saveOrUpdate(dto, null);
         return ResponseEntity.ok()
                 .body(result);
@@ -51,8 +57,11 @@ public class RestDistrictController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<DistrictDto> updateDistrict(@Valid @RequestBody DistrictDto dto,
+    public ResponseEntity<DistrictDto> update(@Validated(OnUpdate.class) @RequestBody DistrictDto dto,
                                                             @PathVariable UUID id) {
+        if(!districtService.isValidDto(dto)) {
+            return ResponseEntity.notFound().build();
+        }
         DistrictDto result = districtService.saveOrUpdate(dto, id);
         return ResponseEntity.ok()
                 .body(result);

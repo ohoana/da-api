@@ -14,12 +14,12 @@ import com.globits.da.dto.CategoryDto;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, UUID>{
-	@Query("select count(entity.id) from Category entity where entity.code =?1 and (entity.id <> ?2 or ?2 is null) ")
+	@Query("SELECT count(entity.id) FROM Category entity WHERE entity.code =?1 AND (entity.id <> ?2 OR ?2 is null) ")
 	Long checkCode(String code, UUID id);
-	@Query("select new com.globits.da.dto.CategoryDto(ed) from Category ed")
+	@Query("SELECT new com.globits.da.dto.CategoryDto(ed) FROM Category ed")
 	Page<CategoryDto> getListPage( Pageable pageable);
 	
-	@Query("select new com.globits.da.dto.CategoryDto(ed) from Category ed")
+	@Query("SELECT new com.globits.da.dto.CategoryDto(ed) FROM Category ed")
 	List<CategoryDto> getAllCategory();
 
 	Category findOneByCode(String code);

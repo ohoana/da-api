@@ -4,12 +4,16 @@ import com.globits.da.domain.Certificate;
 import com.globits.da.dto.CertificateDto;
 import com.globits.da.repository.CertificateRepository;
 import com.globits.da.service.CertificateService;
+import com.globits.da.utils.exception.InvalidDtoException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -19,8 +23,12 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public CertificateDto getById(UUID id) {
-        Certificate certificate = repository.getOne(id);
-        return new CertificateDto(certificate);
+        try {
+            Certificate certificate = repository.getOne(id);
+            return new CertificateDto(certificate);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
     }
 
     @Override
@@ -36,22 +44,21 @@ public class CertificateServiceImpl implements CertificateService {
                 if(!ObjectUtils.isEmpty(dto.getId()) && !id.equals(dto.getId())) {
                     return null;
                 }
-                try {
-                    certificate = repository.getOne(id);
-                } catch (EntityNotFoundException e) {
-                    e.printStackTrace();
-                    return null;
-                }
+                certificate = repository.getOne(id);
             }
             if(ObjectUtils.isEmpty(certificate)) {
                 certificate = new Certificate();
             }
-
-            certificate.setName(dto.getName());
-
-            certificate = repository.save(certificate);
-            if(!ObjectUtils.isEmpty(certificate)) {
-                return new CertificateDto(certificate);
+            try {
+                certificate.setName(dto.getName());
+                certificate = repository.save(certificate);
+                if(!ObjectUtils.isEmpty(certificate)) {
+                    return new CertificateDto(certificate);
+                }
+            } catch (EntityNotFoundException e) {
+                Map<String, String> errors = new HashMap<>();
+                errors.put("Certificate", "Not found!");
+                throw new InvalidDtoException(errors);
             }
         }
         return null;
@@ -59,9 +66,13 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public Boolean delete(UUID id) {
-        if(id != null) {
-            repository.deleteById(id);
-            return true;
+        if(!ObjectUtils.isEmpty(id)) {
+            try {
+                repository.deleteById(id);
+                return true;
+            } catch (EmptyResultDataAccessException e) {
+                return false;
+            }
         }
         return false;
     }

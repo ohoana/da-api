@@ -46,4 +46,12 @@ public class District extends BaseObject {
     public void setTowns(List<Town> towns) {
         this.towns = towns;
     }
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
+    }
 }

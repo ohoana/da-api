@@ -20,7 +20,7 @@ public class Province extends BaseObject {
     private List<Employee> employees;
 
     @OneToMany(mappedBy = "province")
-    private List<Conferring> conferrings;
+    private List<ReleaseInfor> releases;
 
     public String getName() {
         return name;
@@ -36,5 +36,21 @@ public class Province extends BaseObject {
 
     public void setDistricts(List<District> districts) {
         this.districts = districts;
+    }
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
+    }
+
+    public List<ReleaseInfor> getReleases() {
+        return releases;
+    }
+
+    public void setReleases(List<ReleaseInfor> releases) {
+        this.releases = releases;
     }
 }

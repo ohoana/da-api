@@ -11,6 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface CertificateRepository extends JpaRepository<Certificate, UUID> {
-    @Query("select new com.globits.da.dto.CertificateDto(entity) from Certificate entity")
+    @Query("SELECT new com.globits.da.dto.CertificateDto(entity) FROM Certificate entity")
     List<CertificateDto> getAll();
 }

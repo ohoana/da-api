@@ -12,10 +12,12 @@ public interface DistrictService {
     DistrictDto getById(UUID id);
     List<DistrictDto> getAll();
 
-    List<DistrictDto> getByProvinceId(UUID provinceId);
+    List<DistrictDto> getByProvinceId(UUID id);
     DistrictDto saveOrUpdate(DistrictDto dto, UUID id);
 
     List<District> saveOrUpdateList(List<DistrictDto> dtos, Province province);
 
     Boolean delete(UUID id);
+
+    Boolean isValidDto(DistrictDto dto);
 }

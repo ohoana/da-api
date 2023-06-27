@@ -11,10 +11,12 @@ public interface TownService {
     TownDto getById(UUID id);
     List<TownDto> getAll();
 
-    List<TownDto> getByDistrictId(UUID districtId);
+    List<TownDto> getByDistrictId(UUID id);
     TownDto saveOrUpdate(TownDto dto, UUID id);
 
     List<Town> saveOrUpdateList(List<TownDto> dtos, District district);
 
     Boolean delete(UUID id);
+
+    Boolean isValidDto(TownDto dto);
 }
