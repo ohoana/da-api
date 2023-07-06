@@ -7,11 +7,8 @@ import com.globits.da.repository.DistrictRepository;
 import com.globits.da.repository.TownRepository;
 import com.globits.da.service.TownService;
 import com.globits.da.utils.exception.InvalidDtoException;
-import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -23,15 +20,17 @@ import java.util.*;
 
 @Service
 public class TownServiceImpl implements TownService {
+    private final TownRepository townRepository;
+    private final DistrictRepository districtRepository;
+    private final Validator validator;
 
-    @Autowired
-    private TownRepository townRepository;
-
-    @Autowired
-    private DistrictRepository districtRepository;
-
-    @Autowired
-    private Validator validator;
+    public TownServiceImpl(TownRepository townRepository,
+                           DistrictRepository districtRepository,
+                           Validator validator) {
+        this.townRepository = townRepository;
+        this.districtRepository = districtRepository;
+        this.validator = validator;
+    }
 
     @Override
     public TownDto getById(UUID id) {
@@ -94,7 +93,7 @@ public class TownServiceImpl implements TownService {
             List<Town> towns = new ArrayList<>();
             for(TownDto dto : dtos) {
                 if(isValidDto(dto)) {
-                    Town town = null;
+                    Town town;
                     try {
                         town = townRepository.getOne(dto.getId());
                         town.setName(dto.getName());

@@ -13,7 +13,6 @@ import java.util.UUID;
 public interface TownRepository extends JpaRepository<Town, UUID> {
     @Query("SELECT new com.globits.da.dto.TownDto(entity) FROM Town entity")
     List<TownDto> getAll();
-
     @Query("SELECT new com.globits.da.dto.TownDto(entity) FROM Town entity WHERE entity.district.id = ?1")
     List<TownDto> getByDistrictId(UUID districtId);
 }

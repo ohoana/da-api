@@ -6,6 +6,15 @@ import com.globits.da.domain.Category;
 public class CategoryDto extends BaseObjectDto{
 	private String name;
 	private String code;
+
+	public CategoryDto(Category entity) {
+		if(entity != null) {
+			this.setId(entity.getId());
+			this.code = entity.getCode();
+			this.name = entity.getName();
+		}
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -18,16 +27,4 @@ public class CategoryDto extends BaseObjectDto{
 	public void setCode(String code) {
 		this.code = code;
 	}
-	 
-	public CategoryDto() {
-		super();
-	}
-	public CategoryDto(Category entity) {
-		if(entity != null) {
-			this.setId(entity.getId());
-			this.code = entity.getCode();
-			this.name = entity.getName();
-		}
-	}
-	
 }

@@ -8,16 +8,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface DistrictService {
-
     DistrictDto getById(UUID id);
     List<DistrictDto> getAll();
-
     List<DistrictDto> getByProvinceId(UUID id);
     DistrictDto saveOrUpdate(DistrictDto dto, UUID id);
-
     List<District> saveOrUpdateList(List<DistrictDto> dtos, Province province);
-
     Boolean delete(UUID id);
-
     Boolean isValidDto(DistrictDto dto);
 }

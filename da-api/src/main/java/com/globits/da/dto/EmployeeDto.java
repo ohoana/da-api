@@ -3,12 +3,14 @@ package com.globits.da.dto;
 import com.globits.core.domain.BaseObject;
 import com.globits.da.domain.Employee;
 import com.globits.da.validator.constraint.NotContainSpace;
-import com.globits.da.validator.constraint.NotDuplicate;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
 import org.springframework.util.ObjectUtils;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.UUID;
 
 public class EmployeeDto extends BaseObject {
@@ -17,7 +19,6 @@ public class EmployeeDto extends BaseObject {
     @NotBlank(message = "Name must not be empty",
             groups = {OnCreate.class, OnUpdate.class})
     private String name;
-
     @Pattern(regexp = "^[\\w|.]+@[\\w]+\\.[\\w]{2,3}$", message = "Email is not valid",
             groups = {OnCreate.class, OnUpdate.class})
     private String email;
@@ -27,18 +28,16 @@ public class EmployeeDto extends BaseObject {
     @Min(value = 1,message = "Age must not be negative",
             groups = {OnCreate.class, OnUpdate.class})
     private Integer age;
-
     @NotNull(message = "Province must not be empty",
             groups = {OnCreate.class})
     private UUID provinceId;
-
     @NotNull(message = "District must not be empty",
             groups = {OnCreate.class})
     private UUID districtId;
-
     @NotNull(message = "Town must not be empty",
             groups = {OnCreate.class})
     private UUID townId;
+
     public EmployeeDto() {
     }
 
@@ -59,63 +58,48 @@ public class EmployeeDto extends BaseObject {
     public String getCode() {
         return code;
     }
-
     public void setCode(String code) {
         this.code = code;
     }
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
-
     public String getPhone() {
         return phone;
     }
-
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
     public Integer getAge() {
         return age;
     }
-
     public void setAge(Integer age) {
         this.age = age;
     }
-
     public UUID getProvinceId() {
         return provinceId;
     }
-
     public void setProvinceId(UUID provinceId) {
         this.provinceId = provinceId;
     }
-
     public UUID getDistrictId() {
         return districtId;
     }
-
     public void setDistrictId(UUID districtId) {
         this.districtId = districtId;
     }
-
     public UUID getTownId() {
         return townId;
     }
-
     public void setTownId(UUID townId) {
         this.townId = townId;
     }

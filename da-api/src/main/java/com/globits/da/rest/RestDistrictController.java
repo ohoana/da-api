@@ -5,21 +5,21 @@ import com.globits.da.dto.DistrictDto;
 import com.globits.da.service.DistrictService;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/district")
 public class RestDistrictController {
-    @Autowired
-    private DistrictService districtService;
+    private final DistrictService districtService;
+
+    public RestDistrictController(DistrictService districtService) {
+        this.districtService = districtService;
+    }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "districts", method = RequestMethod.GET)

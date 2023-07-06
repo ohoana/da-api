@@ -7,7 +7,6 @@ import com.globits.da.repository.ProvinceRepository;
 import com.globits.da.service.DistrictService;
 import com.globits.da.service.ProvinceService;
 import com.globits.da.utils.exception.InvalidDtoException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -20,12 +19,14 @@ import java.util.UUID;
 
 @Service
 public class ProvinceServiceImpl implements ProvinceService {
-    @Autowired
-    private ProvinceRepository provinceRepository;
+    private final ProvinceRepository provinceRepository;
+    private final DistrictService districtService;
 
-    @Autowired
-    private DistrictService districtService;
-
+    public ProvinceServiceImpl(ProvinceRepository provinceRepository,
+                               DistrictService districtService) {
+        this.provinceRepository = provinceRepository;
+        this.districtService = districtService;
+    }
 
     @Override
     public ProvinceDto getById(UUID id) {
@@ -58,7 +59,7 @@ public class ProvinceServiceImpl implements ProvinceService {
             try {
                 province.setName(dto.getName());
                 province = provinceRepository.save(province);
-                List<District> districts = districtService.saveOrUpdateList(dto.getDistrictDtos(), province);
+                List<District> districts = districtService.saveOrUpdateList(dto.getDistrictDtoList(), province);
                 province.setDistricts(districts);
                 province = provinceRepository.save(province);
                 if(!ObjectUtils.isEmpty(province)) {

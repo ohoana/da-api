@@ -3,12 +3,10 @@ package com.globits.da.rest;
 import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.CertificateDto;
 import com.globits.da.service.CertificateService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
-import javax.security.sasl.SaslServer;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -16,10 +14,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/certificate")
 public class RestCertificateController {
+    private final CertificateService certificateService;
 
-    @Autowired
-    private CertificateService certificateService;
-
+    public RestCertificateController(CertificateService certificateService) {
+        this.certificateService = certificateService;
+    }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/certificates", method = RequestMethod.GET)

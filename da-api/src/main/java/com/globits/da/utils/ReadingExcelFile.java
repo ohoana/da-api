@@ -1,22 +1,22 @@
 package com.globits.da.utils;
 
 import com.globits.da.dto.EmployeeDto;
-import com.globits.da.service.EmployeeService;
 import com.globits.da.utils.exception.InvalidDtoException;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @Component
 public class ReadingExcelFile {
-    @Autowired
-    private EmployeeService employeeService;
+
+    public ReadingExcelFile() {
+    }
+
     private static final int COLUMN_INDEX_CODE = 0;
     private static final int COLUMN_INDEX_NAME = 1;
     private static final int COLUMN_INDEX_EMAIL = 2;
@@ -26,7 +26,8 @@ public class ReadingExcelFile {
     private static final int COLUMN_INDEX_DISTRICT = 6;
     private static final int COLUMN_INDEX_TOWN = 7;
 
-    public List<EmployeeDto> getEmployee(XSSFWorkbook workbook) {
+    public List<EmployeeDto> getEmployee(MultipartFile file) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
         List<EmployeeDto> result = new ArrayList<>();
         Set<String> codeSet = new HashSet<>();
         int numOfSheet = workbook.getNumberOfSheets();

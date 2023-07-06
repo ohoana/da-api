@@ -14,11 +14,7 @@ import com.globits.da.repository.TownRepository;
 import com.globits.da.service.EmployeeService;
 import com.globits.da.utils.WriteExcelFile;
 import com.globits.da.utils.exception.InvalidDtoException;
-import com.globits.da.validator.marker.OnCreate;
-import com.globits.da.validator.marker.OnUpdate;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,32 +22,34 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
-import javax.validation.Valid;
 import javax.validation.Validator;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> implements EmployeeService {
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
+    private final ProvinceRepository provinceRepository;
+    private final DistrictRepository districtRepository;
+    private final TownRepository townRepository;
+    private final Validator validator;
 
-    @Autowired
-    private ProvinceRepository provinceRepository;
-
-    @Autowired
-    private DistrictRepository districtRepository;
-
-    @Autowired
-    private TownRepository townRepository;
-
-    @Autowired
-    private Validator validator;
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository,
+                               ProvinceRepository provinceRepository,
+                               DistrictRepository districtRepository,
+                               TownRepository townRepository,
+                               Validator validator) {
+        this.employeeRepository = employeeRepository;
+        this.provinceRepository = provinceRepository;
+        this.districtRepository = districtRepository;
+        this.townRepository = townRepository;
+        this.validator = validator;
+    }
 
     @Override
     public EmployeeDto findByCode(String code) {
@@ -70,8 +68,8 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
             return null;
         }
 
-        Integer pageIndex = Math.max(searchDto.getPageIndex() - 1, 0);
-        Integer pageSize = searchDto.getPageSize();
+        int pageIndex = Math.max(searchDto.getPageIndex() - 1, 0);
+        int pageSize = searchDto.getPageSize();
 
         String whereSql = "";
 
@@ -126,12 +124,12 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
         sqlQuery.setFirstResult(offset);
         sqlQuery.setMaxResults(pageSize);
 
+        @SuppressWarnings("unchecked")
         List<EmployeeDto> employeeDtoList = sqlQuery.getResultList();
         long count = (long) sqlCountQuery.getSingleResult();
         if(pageSize > 0) {
             Pageable pageable = PageRequest.of(pageIndex, pageSize);
-            Page<EmployeeDto> result = new PageImpl<>(employeeDtoList, pageable, count);
-            return result;
+            return new PageImpl<>(employeeDtoList, pageable, count);
         }
         return null;
     }
@@ -142,82 +140,61 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
     }
 
     @Override
-    public EmployeeDto saveOrUpdate(EmployeeDto employeeDto, UUID id){
-        if(!ObjectUtils.isEmpty(employeeDto)) {
-            Employee employee = null;
-            if (!ObjectUtils.isEmpty(id)) {
-                if(!ObjectUtils.isEmpty(employeeDto.getId()) && !id.equals(employeeDto.getId())) {
-                    return null;
-                }
-                employee = employeeRepository.getOne(id);
-            }
-            if(ObjectUtils.isEmpty(employee)) {
-                employee = new Employee();
-            }
-            try {
+    @Transactional
+    public List<EmployeeDto> save(List<EmployeeDto> employeeDtoList) {
+        if(!ObjectUtils.isEmpty(employeeDtoList)) {
+            List<Employee> employees = new ArrayList<>();
+            for(EmployeeDto employeeDto : employeeDtoList) {
+                Employee employee = new Employee();
+
                 employee.setCode(employeeDto.getCode());
                 employee.setName(employeeDto.getName());
                 employee.setEmail(employeeDto.getEmail());
                 employee.setPhone(employeeDto.getPhone());
                 employee.setAge(employeeDto.getAge());
-                if(!ObjectUtils.isEmpty(employeeDto.getTownId())
-                        && !ObjectUtils.isEmpty(employeeDto.getDistrictId())
-                        && !ObjectUtils.isEmpty(employeeDto.getProvinceId())) {
-                    employee.setProvince(provinceRepository.getOne(employeeDto.getProvinceId()));
-                    employee.setDistrict(districtRepository.getOne(employeeDto.getDistrictId()));
-                    employee.setTown(townRepository.getOne(employeeDto.getTownId()));
-                }
-                employee = employeeRepository.save(employee);
-                if(!ObjectUtils.isEmpty(employee)) {
-                    return new EmployeeDto(employee);
-                }
-            } catch (EntityNotFoundException e) {
-                Map<String, String> errors = new HashMap<>();
-                errors.put("Employee", "Not found!");
-                throw new InvalidDtoException(errors);
+                employee.setProvince(provinceRepository.getOne(employeeDto.getProvinceId()));
+                employee.setDistrict(districtRepository.getOne(employeeDto.getDistrictId()));
+                employee.setTown(townRepository.getOne(employeeDto.getTownId()));
+
+                employees.add(employee);
             }
+            List<Employee> employeeIterator = employeeRepository.saveAll(employees);
+            return employeeIterator.stream().map(EmployeeDto::new).collect(Collectors.toList());
         }
         return null;
     }
 
     @Override
-    @Transactional
-    public List<EmployeeDto> saveList(List<EmployeeDto> employeeDtos) {
-        List<EmployeeDto> result = new ArrayList<>();
-        int lineIdx = 1;
-        if(!ObjectUtils.isEmpty(employeeDtos)) {
+    public List<EmployeeDto> update(List<EmployeeDto> employeeDtoList) {
+        if(!ObjectUtils.isEmpty(employeeDtoList)) {
             List<Employee> employees = new ArrayList<>();
-            for(EmployeeDto employeeDto : employeeDtos) {
+            for(EmployeeDto employeeDto : employeeDtoList) {
+                Employee employee = employeeRepository.getOne(employeeDto.getId());
+
                 try {
-                    if(isValidEmployee(employeeDto, OnCreate.class)) {
-                        Employee employee = new Employee();
-                        employee.setCode(employeeDto.getCode());
-                        employee.setName(employeeDto.getName());
-                        employee.setEmail(employeeDto.getEmail());
-                        employee.setPhone(employeeDto.getPhone());
-                        employee.setAge(employeeDto.getAge());
-                        if(!ObjectUtils.isEmpty(employeeDto.getTownId())
-                                && !ObjectUtils.isEmpty(employeeDto.getDistrictId())
-                                && !ObjectUtils.isEmpty(employeeDto.getProvinceId())) {
-                            employee.setProvince(provinceRepository.getOne(employeeDto.getProvinceId()));
-                            employee.setDistrict(districtRepository.getOne(employeeDto.getDistrictId()));
-                            employee.setTown(townRepository.getOne(employeeDto.getTownId()));
-                        }
-                        employees.add(employee);
-                        if(!ObjectUtils.isEmpty(employee)) {
-                            result.add(new EmployeeDto(employee));
-                        }
+                    employee.setCode(employeeDto.getCode());
+                    employee.setName(employeeDto.getName());
+                    employee.setEmail(employeeDto.getEmail());
+                    employee.setPhone(employeeDto.getPhone());
+                    employee.setAge(employeeDto.getAge());
+                    if(!ObjectUtils.isEmpty(employeeDto.getTownId())
+                            && !ObjectUtils.isEmpty(employeeDto.getDistrictId())
+                            && !ObjectUtils.isEmpty(employeeDto.getProvinceId())) {
+                        employee.setProvince(provinceRepository.getOne(employeeDto.getProvinceId()));
+                        employee.setDistrict(districtRepository.getOne(employeeDto.getDistrictId()));
+                        employee.setTown(townRepository.getOne(employeeDto.getTownId()));
                     }
-                } catch (InvalidDtoException e) {
+                    employees.add(employee);
+                } catch (EntityNotFoundException e) {
                     Map<String, String> errors = new HashMap<>();
-                    errors.put("Excel", "at line " + lineIdx + e.getErrors().toString());
+                    errors.put("Employee", "Not found with given ID");
                     throw new InvalidDtoException(errors);
                 }
-                lineIdx++;
             }
-            employeeRepository.saveAll(employees);
+            List<Employee> employeeIterator = employeeRepository.saveAll(employees);
+            return employeeIterator.stream().map(EmployeeDto::new).collect(Collectors.toList());
         }
-        return result;
+        return null;
     }
 
     @Override
@@ -231,75 +208,79 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
 
     @Override
     public Workbook getExcel() {
-        Workbook workbook = WriteExcelFile.writeToExcelFile(employeeRepository.getAll());
-        return workbook;
+        return WriteExcelFile.writeToExcelFile(employeeRepository.getAll());
     }
 
     @Override
-    public Boolean isValidEmployee(EmployeeDto employeeDto, Class group) {
+    public Boolean isValidEmployee(List<EmployeeDto> employeeDtoList, Class<?> group) {
         HashMap<String, String> errors = new HashMap<>();
-        Set<ConstraintViolation<EmployeeDto>> violations = validator.validate(employeeDto, group);
-        if(!violations.isEmpty()) {
-            for(ConstraintViolation<EmployeeDto> constraintViolation : violations) {
-                errors.put(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage());
+        int line = 1;
+        for(EmployeeDto employeeDto : employeeDtoList) {
+            Set<ConstraintViolation<EmployeeDto>> violations = validator.validate(employeeDto, group);
+            if(!violations.isEmpty()) {
+                for(ConstraintViolation<EmployeeDto> constraintViolation : violations) {
+                    errors.put(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage());
+                }
             }
-        }
 
-        String sql = "SELECT COUNT(entity) FROM Employee as entity WHERE entity.code = :code ";
-        Employee employee = null;
-        if (employeeRepository.existsById(employeeDto.getId())) {
-            employee = employeeRepository.getOne(employeeDto.getId());
-            sql += "AND entity.id != :id";
-        }
-
-        Query query = manager.createQuery(sql);
-
-        query.setParameter("code", employeeDto.getCode());
-
-        if(!ObjectUtils.isEmpty(employee)) {
-            query.setParameter("id", employeeDto.getId());
-        }
-
-        long count = (long) query.getSingleResult();
-
-        if(count > 0) {
-            errors.put("code", "Code must not be duplicated");
-        }
-        Province province = null;
-        District district = null;
-        Town town = null;
-        if(!ObjectUtils.isEmpty(employeeDto.getProvinceId())) {
-            if (provinceRepository.existsById(employeeDto.getProvinceId())) {
-                province = provinceRepository.getOne(employeeDto.getProvinceId());
-            } else {
-                errors.put("Province", "Not found!");
+            String sql = "SELECT COUNT(entity) FROM Employee as entity WHERE entity.code = :code ";
+            Employee employee = null;
+            if (employeeRepository.existsById(employeeDto.getId())) {
+                employee = employeeRepository.getOne(employeeDto.getId());
+                sql += "AND entity.id != :id";
             }
-        }
-        if (!ObjectUtils.isEmpty(employeeDto.getDistrictId())) {
-            if (districtRepository.existsById(employeeDto.getDistrictId())) {
-                district = districtRepository.getOne(employeeDto.getDistrictId());
-            } else {
-                errors.put("District", "Not found!");
-            }
-        }
-        if (!ObjectUtils.isEmpty(employeeDto.getTownId())) {
-            if (townRepository.existsById(employeeDto.getTownId())) {
-                town = townRepository.getOne(employeeDto.getTownId());
-            } else {
-                errors.put("Town", "Not found!");
-            }
-        }
-        if (!ObjectUtils.isEmpty(district) && !ObjectUtils.isEmpty(town)
-                && !district.getId().equals(town.getDistrict().getId())) {
-            errors.put("townId", "Town must belong to a district");
-        }
-        if (!ObjectUtils.isEmpty(province) && !ObjectUtils.isEmpty(district)
-                && !province.getId().equals(district.getProvince().getId())) {
-            errors.put("districtId", "District must belong to a province");
-        }
 
-        if(errors.size() > 0) {
-            throw new InvalidDtoException(errors);
+            Query query = manager.createQuery(sql);
+
+            query.setParameter("code", employeeDto.getCode());
+
+            if(!ObjectUtils.isEmpty(employee)) {
+                query.setParameter("id", employeeDto.getId());
+            }
+
+            long count = (long) query.getSingleResult();
+
+            if(count > 0) {
+                errors.put("code", "Code must not be duplicated");
+            }
+            Province province = null;
+            District district = null;
+            Town town = null;
+            if(!ObjectUtils.isEmpty(employeeDto.getProvinceId())) {
+                if (provinceRepository.existsById(employeeDto.getProvinceId())) {
+                    province = provinceRepository.getOne(employeeDto.getProvinceId());
+                } else {
+                    errors.put("Province", "Province not found!");
+                }
+            }
+            if (!ObjectUtils.isEmpty(employeeDto.getDistrictId())) {
+                if (districtRepository.existsById(employeeDto.getDistrictId())) {
+                    district = districtRepository.getOne(employeeDto.getDistrictId());
+                } else {
+                    errors.put("District", "District not found!");
+                }
+            }
+            if (!ObjectUtils.isEmpty(employeeDto.getTownId())) {
+                if (townRepository.existsById(employeeDto.getTownId())) {
+                    town = townRepository.getOne(employeeDto.getTownId());
+                } else {
+                    errors.put("Town", "Town not found!");
+                }
+            }
+            if (!ObjectUtils.isEmpty(district) && !ObjectUtils.isEmpty(town)
+                    && !district.getId().equals(town.getDistrict().getId())) {
+                errors.put("townId", "Town must belong to a district");
+            }
+            if (!ObjectUtils.isEmpty(province) && !ObjectUtils.isEmpty(district)
+                    && !province.getId().equals(district.getProvince().getId())) {
+                errors.put("districtId", "District must belong to a province");
+            }
+            line++;
+            if(errors.size() > 0) {
+                Map<String, String> errorLine = new HashMap<>();
+                errorLine.put("Employee in line " + line, errors.values().toString());
+                throw new InvalidDtoException(errorLine);
+            }
         }
         return true;
     }

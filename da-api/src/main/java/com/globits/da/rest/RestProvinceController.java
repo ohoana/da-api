@@ -3,10 +3,8 @@ package com.globits.da.rest;
 import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.ProvinceDto;
 import com.globits.da.service.ProvinceService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,8 +14,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/province")
 public class RestProvinceController {
-    @Autowired
-    private ProvinceService provinceService;
+    private final ProvinceService provinceService;
+
+    public RestProvinceController(ProvinceService provinceService) {
+        this.provinceService = provinceService;
+    }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/provinces", method = RequestMethod.GET)

@@ -4,18 +4,13 @@ import com.globits.da.domain.District;
 import com.globits.da.domain.Province;
 import com.globits.da.domain.Town;
 import com.globits.da.dto.DistrictDto;
-import com.globits.da.dto.TownDto;
 import com.globits.da.repository.DistrictRepository;
 import com.globits.da.repository.ProvinceRepository;
 import com.globits.da.service.DistrictService;
-import com.globits.da.service.ProvinceService;
 import com.globits.da.service.TownService;
 import com.globits.da.utils.exception.InvalidDtoException;
-import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -26,18 +21,17 @@ import java.util.*;
 
 @Service
 public class DistrictServiceImpl implements DistrictService {
+    private final DistrictRepository districtRepository;
+    private final ProvinceRepository provinceRepository;
+    private final TownService townService;
+    private final Validator validator;
 
-    @Autowired
-    private DistrictRepository districtRepository;
-
-    @Autowired
-    private ProvinceRepository provinceRepository;
-
-    @Autowired
-    private TownService townService;
-
-    @Autowired
-    private Validator validator;
+    public DistrictServiceImpl(DistrictRepository districtRepository, ProvinceRepository provinceRepository, TownService townService, Validator validator) {
+        this.districtRepository = districtRepository;
+        this.provinceRepository = provinceRepository;
+        this.townService = townService;
+        this.validator = validator;
+    }
 
     @Override
     public DistrictDto getById(UUID id) {
@@ -79,7 +73,7 @@ public class DistrictServiceImpl implements DistrictService {
                 }
                 district.setName(dto.getName());
                 district = districtRepository.save(district);
-                List<Town> towns = townService.saveOrUpdateList(dto.getTownDtos(), district);
+                List<Town> towns = townService.saveOrUpdateList(dto.getTownDtoList(), district);
                 district.setTowns(towns);
                 district = districtRepository.save(district);
                 if(!ObjectUtils.isEmpty(district)) {
@@ -110,10 +104,12 @@ public class DistrictServiceImpl implements DistrictService {
                         district.setName(dto.getName());
                         district.setProvince(province);
                     } finally {
-                        district = districtRepository.save(district);
-                        List<Town> towns = townService.saveOrUpdateList(dto.getTownDtos(), district);
-                        district.setTowns(towns);
-                        districts.add(district);
+                        if(!ObjectUtils.isEmpty(district)) {
+                            district = districtRepository.save(district);
+                            List<Town> towns = townService.saveOrUpdateList(dto.getTownDtoList(), district);
+                            district.setTowns(towns);
+                            districts.add(district);
+                        }
                     }
                 }
             }

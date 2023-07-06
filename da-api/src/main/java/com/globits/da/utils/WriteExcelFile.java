@@ -3,16 +3,10 @@ package com.globits.da.utils;
 import com.globits.da.dto.EmployeeDto;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 public class WriteExcelFile {
@@ -28,9 +22,7 @@ public class WriteExcelFile {
 
     public static Workbook writeToExcelFile(List<EmployeeDto> employeeDtoList) {
         Workbook workbook = new XSSFWorkbook();
-
         XSSFSheet sheet = (XSSFSheet) workbook.createSheet("employee");
-
         int rowIdx = 0;
         writeHeader(sheet, rowIdx++);
 
@@ -38,20 +30,11 @@ public class WriteExcelFile {
             XSSFRow row = sheet.createRow(rowIdx++);
             writeEmployee(employeeDto, row);
         }
-
-//        try {
-//            OutputStream outputStream = new FileOutputStream("C:\\Users\\hoant\\Desktop\\data.xlsx");
-//            workbook.write(outputStream);
-//            workbook.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
         return workbook;
     }
 
     public static void writeEmployee(EmployeeDto employeeDto, XSSFRow row) {
-        XSSFCell cell = null;
+        XSSFCell cell;
         cell = row.createCell(COLUMN_INDEX_ID);
         cell.setCellValue(employeeDto.getId().toString());
 
@@ -82,8 +65,8 @@ public class WriteExcelFile {
 
     private static void writeHeader(Sheet sheet, int rowIdx) {
         XSSFRow row = (XSSFRow) sheet.createRow(rowIdx);
+        XSSFCell cell;
 
-        XSSFCell cell = null;
         cell = row.createCell(COLUMN_INDEX_ID);
         cell.setCellValue("ID");
 

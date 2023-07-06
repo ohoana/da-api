@@ -9,17 +9,13 @@ import java.util.List;
 @Table(name = "tbl_certificate")
 public class Certificate extends BaseObject {
     private static final long serialVersionUID = 1L;
-
     @Column(name = "name")
     private String name;
-
     @OneToMany(mappedBy = "certificate")
-    private List<ReleaseInfor> conferrings;
-
+    private List<CertificateMap> certificateMaps;
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }

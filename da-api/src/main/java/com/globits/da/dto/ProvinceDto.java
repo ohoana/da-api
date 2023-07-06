@@ -2,11 +2,8 @@ package com.globits.da.dto;
 
 import com.globits.core.domain.BaseObject;
 import com.globits.da.domain.Province;
-import org.springframework.security.core.parameters.P;
 import org.springframework.util.ObjectUtils;
-
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,22 +11,16 @@ import java.util.stream.Collectors;
 public class ProvinceDto extends BaseObject {
     @NotBlank(message = "Name must not be empty")
     private String name;
-    private List<DistrictDto> districtDtos;
-
-    public ProvinceDto() {
-        super();
-    }
+    private List<DistrictDto> districtDtoList;
 
     public ProvinceDto(Province province) {
         if(!ObjectUtils.isEmpty(province)) {
             this.setId(province.getId());
             this.name = province.getName();
             if(!ObjectUtils.isEmpty(province.getDistricts())) {
-                this.districtDtos = province.getDistricts().stream().map((item) -> {
-                    return new DistrictDto(item);
-                }).collect(Collectors.toList());
+                this.districtDtoList = province.getDistricts().stream().map(DistrictDto::new).collect(Collectors.toList());
             } else {
-                this.districtDtos = new ArrayList<>();
+                this.districtDtoList = new ArrayList<>();
             }
         }
     }
@@ -37,16 +28,11 @@ public class ProvinceDto extends BaseObject {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
 
-    public List<DistrictDto> getDistrictDtos() {
-        return districtDtos;
-    }
-
-    public void setDistrictDtos(List<DistrictDto> districtDtos) {
-        this.districtDtos = districtDtos;
+    public List<DistrictDto> getDistrictDtoList() {
+        return districtDtoList;
     }
 }

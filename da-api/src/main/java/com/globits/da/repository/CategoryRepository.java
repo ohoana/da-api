@@ -18,10 +18,7 @@ public interface CategoryRepository extends JpaRepository<Category, UUID>{
 	Long checkCode(String code, UUID id);
 	@Query("SELECT new com.globits.da.dto.CategoryDto(ed) FROM Category ed")
 	Page<CategoryDto> getListPage( Pageable pageable);
-	
 	@Query("SELECT new com.globits.da.dto.CategoryDto(ed) FROM Category ed")
 	List<CategoryDto> getAllCategory();
-
 	Category findOneByCode(String code);
-	
 }

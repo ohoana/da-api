@@ -5,7 +5,6 @@ import com.globits.da.dto.CertificateDto;
 import com.globits.da.repository.CertificateRepository;
 import com.globits.da.service.CertificateService;
 import com.globits.da.utils.exception.InvalidDtoException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -18,8 +17,11 @@ import java.util.UUID;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
-    @Autowired
-    private CertificateRepository repository;
+    private final CertificateRepository repository;
+
+    public CertificateServiceImpl(CertificateRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public CertificateDto getById(UUID id) {

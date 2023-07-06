@@ -1,49 +1,47 @@
 package com.globits.da.rest;
 
 import com.globits.da.AFFakeConstants;
-import com.globits.da.dto.ReleaseInforDto;
-import com.globits.da.service.ReleaseInforService;
-import com.globits.da.utils.exception.InvalidDtoException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.globits.da.dto.CertificateMapDto;
+import com.globits.da.service.CertificateMapService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/conferring")
-public class RestReleaseInforController {
+public class RestCertificateMapController {
+    private final CertificateMapService certificateMapService;
 
-    @Autowired
-    private ReleaseInforService releaseInforService;
+    public RestCertificateMapController(CertificateMapService certificateMapService) {
+        this.certificateMapService = certificateMapService;
+    }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/conferrings", method = RequestMethod.GET)
-    public ResponseEntity<List<ReleaseInforDto>> getAll() {
-        List<ReleaseInforDto> result = releaseInforService.getAll();
+    public ResponseEntity<List<CertificateMapDto>> getAll() {
+        List<CertificateMapDto> result = certificateMapService.getAll();
         return ResponseEntity.ok()
                 .body(result);
     }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/employee/{id}", method = RequestMethod.GET)
-    public ResponseEntity<List<ReleaseInforDto>> getByEmployee(@PathVariable UUID id) {
-        List<ReleaseInforDto> result = releaseInforService.getByEmployeeId(id);
+    public ResponseEntity<List<CertificateMapDto>> getByEmployee(@PathVariable UUID id) {
+        List<CertificateMapDto> result = certificateMapService.getByEmployeeId(id);
         return ResponseEntity.ok()
                 .body(result);
     }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<ReleaseInforDto> addCertificateToEmployee(@Valid @RequestBody ReleaseInforDto dto) {
-        ReleaseInforDto result = null;
-        if(releaseInforService.isValidDto(dto)){
-            result = releaseInforService.saveOrUpdate(dto, null);
+    public ResponseEntity<CertificateMapDto> addCertificateToEmployee(@Valid @RequestBody CertificateMapDto dto) {
+        CertificateMapDto result = null;
+        if(certificateMapService.isValidDto(dto)){
+            result = certificateMapService.saveOrUpdate(dto, null);
         }
         return ResponseEntity.ok()
                 .body(result);
@@ -51,11 +49,11 @@ public class RestReleaseInforController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<ReleaseInforDto> updateCertificateToEmployee(@Valid @RequestBody ReleaseInforDto dto,
-                                                                       @PathVariable UUID id) {
-        ReleaseInforDto result = null;
-        if(releaseInforService.isValidDto(dto)){
-            result = releaseInforService.saveOrUpdate(dto, id);
+    public ResponseEntity<CertificateMapDto> updateCertificateToEmployee(@Valid @RequestBody CertificateMapDto dto,
+                                                                         @PathVariable UUID id) {
+        CertificateMapDto result = null;
+        if(certificateMapService.isValidDto(dto)){
+            result = certificateMapService.saveOrUpdate(dto, id);
         }
         return ResponseEntity.ok()
                 .body(result);
@@ -64,7 +62,7 @@ public class RestReleaseInforController {
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Boolean> deleteCertificateOfEmployee(@PathVariable UUID id) {
-        Boolean result = releaseInforService.deleteById(id);
+        Boolean result = certificateMapService.deleteById(id);
         return ResponseEntity.ok()
                 .body(result);
     }

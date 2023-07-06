@@ -4,7 +4,6 @@ import com.globits.core.domain.BaseObject;
 import com.globits.da.domain.Town;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
-import org.springframework.data.annotation.Transient;
 import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotBlank;
@@ -15,13 +14,9 @@ public class TownDto extends BaseObject {
     @NotBlank(message = "Name must not be empty",
             groups = {OnCreate.class, OnUpdate.class})
     private String name;
-
     @NotNull(message = "District must not be null",
             groups = {OnCreate.class})
     private UUID districtId;
-
-    public TownDto() {
-    }
 
     public TownDto(Town town) {
         if(!ObjectUtils.isEmpty(town)) {
@@ -36,16 +31,10 @@ public class TownDto extends BaseObject {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public UUID getDistrictId() {
         return districtId;
-    }
-
-    public void setDistrictId(UUID districtId) {
-        this.districtId = districtId;
     }
 }

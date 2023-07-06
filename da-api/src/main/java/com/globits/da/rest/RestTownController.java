@@ -1,26 +1,25 @@
 package com.globits.da.rest;
 
 import com.globits.da.AFFakeConstants;
-import com.globits.da.domain.Town;
 import com.globits.da.dto.TownDto;
 import com.globits.da.service.TownService;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/town")
 public class RestTownController {
-    @Autowired
-    private TownService townService;
+    private final TownService townService;
+
+    public RestTownController(TownService townService) {
+        this.townService = townService;
+    }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/towns", method = RequestMethod.GET)

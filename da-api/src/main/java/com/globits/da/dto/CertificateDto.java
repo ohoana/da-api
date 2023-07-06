@@ -1,20 +1,13 @@
 package com.globits.da.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.globits.core.domain.BaseObject;
 import com.globits.da.domain.Certificate;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
 public class CertificateDto extends BaseObject {
     @NotBlank(message = "Name must not be empty")
     private String name;
-
-    public CertificateDto() {
-    }
 
     public CertificateDto(Certificate certificate) {
         if(certificate != null) {
@@ -26,7 +19,6 @@ public class CertificateDto extends BaseObject {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }

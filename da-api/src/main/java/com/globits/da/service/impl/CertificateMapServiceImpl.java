@@ -1,17 +1,16 @@
 package com.globits.da.service.impl;
 
 import com.globits.da.domain.Certificate;
-import com.globits.da.domain.ReleaseInfor;
+import com.globits.da.domain.CertificateMap;
 import com.globits.da.domain.Employee;
 import com.globits.da.domain.Province;
-import com.globits.da.dto.ReleaseInforDto;
+import com.globits.da.dto.CertificateMapDto;
 import com.globits.da.repository.CertificateRepository;
-import com.globits.da.repository.ReleaseInforRepository;
 import com.globits.da.repository.EmployeeRepository;
 import com.globits.da.repository.ProvinceRepository;
-import com.globits.da.service.ReleaseInforService;
+import com.globits.da.repository.ReleaseInforRepository;
+import com.globits.da.service.CertificateMapService;
 import com.globits.da.utils.exception.InvalidDtoException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -22,65 +21,68 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-public class ReleaseInforServiceImpl implements ReleaseInforService {
+public class CertificateMapServiceImpl implements CertificateMapService {
+    private final ReleaseInforRepository releaseInforRepository;
+    private final EmployeeRepository employeeRepository;
+    private final ProvinceRepository provinceRepository;
+    private final CertificateRepository certificateRepository;
 
-    @Autowired
-    private ReleaseInforRepository releaseInforRepository;
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private ProvinceRepository provinceRepository;
-
-    @Autowired
-    private CertificateRepository certificateRepository;
+    public CertificateMapServiceImpl(ReleaseInforRepository releaseInforRepository,
+                                     EmployeeRepository employeeRepository,
+                                     ProvinceRepository provinceRepository,
+                                     CertificateRepository certificateRepository) {
+        this.releaseInforRepository = releaseInforRepository;
+        this.employeeRepository = employeeRepository;
+        this.provinceRepository = provinceRepository;
+        this.certificateRepository = certificateRepository;
+    }
 
     @Override
-    public List<ReleaseInforDto> getAll() {
+    public List<CertificateMapDto> getAll() {
         return releaseInforRepository.getAll();
     }
 
     @Override
-    public List<ReleaseInforDto> getByEmployeeId(UUID id) {
+    public List<CertificateMapDto> getByEmployeeId(UUID id) {
         return releaseInforRepository.getByEmployeeId(id);
     }
 
     @Override
-    public ReleaseInforDto saveOrUpdate(ReleaseInforDto dto, UUID id) {
+    public CertificateMapDto saveOrUpdate(CertificateMapDto dto, UUID id) {
         if(!ObjectUtils.isEmpty(dto)) {
-            ReleaseInfor releaseInfor = null;
+            CertificateMap certificateMap = null;
             if(!ObjectUtils.isEmpty(id)) {
                 if(!ObjectUtils.isEmpty(dto.getId()) && !id.equals(dto.getId())) {
                     return null;
                 }
-                releaseInfor = releaseInforRepository.getOne(id);
+                certificateMap = releaseInforRepository.getOne(id);
             }
 
-            if(ObjectUtils.isEmpty(releaseInfor)) {
-                releaseInfor = new ReleaseInfor();
+            if(ObjectUtils.isEmpty(certificateMap)) {
+                certificateMap = new CertificateMap();
             }
             try {
                 Employee employee = employeeRepository.getOne(dto.getEmployeeId());
                 Certificate certificate = certificateRepository.getOne(dto.getCertificateId());
                 Province province = provinceRepository.getOne(dto.getProvinceId());
 
-                releaseInfor.setEmployee(employee);
-                releaseInfor.setProvince(province);
-                releaseInfor.setCertificate(certificate);
+                certificateMap.setEmployee(employee);
+                certificateMap.setProvince(province);
+                certificateMap.setCertificate(certificate);
 
 
-                releaseInfor.setBeginDate(dto.getBeginDate());
-                releaseInfor.setExpireDate(dto.getExpireDate());
+                certificateMap.setBeginDate(dto.getBeginDate());
+                certificateMap.setExpireDate(dto.getExpireDate());
 
-                releaseInfor = releaseInforRepository.save(releaseInfor);
+                certificateMap = releaseInforRepository.save(certificateMap);
 
-                if(!ObjectUtils.isEmpty(releaseInfor)) {
-                    return new ReleaseInforDto(releaseInfor);
+                if(!ObjectUtils.isEmpty(certificateMap)) {
+                    return new CertificateMapDto(certificateMap);
                 }
             } catch (EntityNotFoundException e) {
                 Map<String, String> errors = new HashMap<>();
-                errors.put("Release Infor", "Not found!");
+                errors.put("Certificate Map", "Not found!");
+                throw new InvalidDtoException(errors);
             }
         }
         return null;
@@ -96,7 +98,7 @@ public class ReleaseInforServiceImpl implements ReleaseInforService {
     }
 
     @Override
-    public Boolean isValidDto(ReleaseInforDto dto) {
+    public Boolean isValidDto(CertificateMapDto dto) {
 
         Map<String, String> errors = new HashMap<>();
 

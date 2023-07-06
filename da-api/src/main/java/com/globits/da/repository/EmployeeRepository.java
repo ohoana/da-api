@@ -13,13 +13,10 @@ import java.util.UUID;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
-
     @Query("SELECT new com.globits.da.dto.EmployeeDto(em) FROM Employee em")
     List<EmployeeDto> getAll();
-
     @Query("SELECT new com.globits.da.dto.EmployeeDto(em) FROM Employee em")
     Page<EmployeeDto> getPage(Pageable pageable);
-
     @Query("SELECT new com.globits.da.dto.EmployeeDto(entity) FROM Employee entity WHERE entity.code = ?1")
     EmployeeDto findByCode(String code);
 }
