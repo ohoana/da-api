@@ -2,6 +2,7 @@ package com.globits.da.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.globits.core.domain.BaseObject;
+import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.CertificateMap;
 import org.springframework.util.ObjectUtils;
 
@@ -10,16 +11,16 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class CertificateMapDto extends BaseObject {
-    @NotNull(message = "Employee must not be null")
+    @NotNull(message = MessageConst.NOT_NULL)
     private UUID employeeId;
-    @NotNull(message = "Province must not be null")
+    @NotNull(message = MessageConst.NOT_NULL)
     private UUID provinceId;
-    @NotNull(message = "Certificate must not be null")
+    @NotNull(message = MessageConst.NOT_NULL)
     private UUID certificateId;
-    @NotNull(message = "Begin Date must not be null")
+    @NotNull(message = MessageConst.NOT_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime beginDate;
-    @NotNull(message = "Expired Date must not be null")
+    @NotNull(message = MessageConst.NOT_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expireDate;
 

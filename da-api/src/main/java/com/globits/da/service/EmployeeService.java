@@ -17,5 +17,5 @@ public interface EmployeeService {
     List<EmployeeDto> update(List<EmployeeDto> employeeDtoList);
     Boolean deleteById(UUID id);
     Workbook getExcel();
-    Boolean isValidEmployee(List<EmployeeDto> employeeDtoList, Class<?> group);
+    Boolean isValidEmployee(List<EmployeeDto> employeeDtoList, Class<?> group, Integer rowIndex);
 }

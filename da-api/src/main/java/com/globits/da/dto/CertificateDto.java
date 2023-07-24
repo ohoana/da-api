@@ -1,12 +1,13 @@
 package com.globits.da.dto;
 
 import com.globits.core.domain.BaseObject;
+import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.Certificate;
 
 import javax.validation.constraints.NotBlank;
 
 public class CertificateDto extends BaseObject {
-    @NotBlank(message = "Name must not be empty")
+    @NotBlank(message = MessageConst.NOT_EMPTY)
     private String name;
 
     public CertificateDto() {

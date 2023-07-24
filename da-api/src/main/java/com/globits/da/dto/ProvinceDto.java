@@ -1,6 +1,7 @@
 package com.globits.da.dto;
 
 import com.globits.core.domain.BaseObject;
+import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.Province;
 import org.springframework.util.ObjectUtils;
 import javax.validation.constraints.NotBlank;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProvinceDto extends BaseObject {
-    @NotBlank(message = "Name must not be empty")
+    @NotBlank(message = MessageConst.NOT_EMPTY)
     private String name;
     private List<DistrictDto> districtDtoList;
 

@@ -1,6 +1,7 @@
 package com.globits.da.service.impl;
 
 import com.globits.core.service.impl.GenericServiceImpl;
+import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.District;
 import com.globits.da.domain.Employee;
 import com.globits.da.domain.Province;
@@ -165,6 +166,7 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
     }
 
     @Override
+    @Transactional
     public List<EmployeeDto> update(List<EmployeeDto> employeeDtoList) {
         if(!ObjectUtils.isEmpty(employeeDtoList)) {
             List<Employee> employees = new ArrayList<>();
@@ -187,7 +189,7 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
                     employees.add(employee);
                 } catch (EntityNotFoundException e) {
                     Map<String, String> errors = new HashMap<>();
-                    errors.put("Employee", "Not found with given ID");
+                    errors.put("Employee", MessageConst.NOT_FOUND);
                     throw new InvalidDtoException(errors);
                 }
             }
@@ -212,9 +214,9 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
     }
 
     @Override
-    public Boolean isValidEmployee(List<EmployeeDto> employeeDtoList, Class<?> group) {
+    public Boolean isValidEmployee(List<EmployeeDto> employeeDtoList, Class<?> group, Integer rowIdx) {
         HashMap<String, String> errors = new HashMap<>();
-        int line = 1;
+        Integer line = rowIdx;
         for(EmployeeDto employeeDto : employeeDtoList) {
             Set<ConstraintViolation<EmployeeDto>> violations = validator.validate(employeeDto, group);
             if(!violations.isEmpty()) {
@@ -241,7 +243,7 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
             long count = (long) query.getSingleResult();
 
             if(count > 0) {
-                errors.put("code", "Code must not be duplicated");
+                errors.put("Code", MessageConst.NOT_DUPLICATE);
             }
             Province province = null;
             District district = null;
@@ -250,36 +252,42 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
                 if (provinceRepository.existsById(employeeDto.getProvinceId())) {
                     province = provinceRepository.getOne(employeeDto.getProvinceId());
                 } else {
-                    errors.put("Province", "Province not found!");
+                    errors.put("Province", MessageConst.NOT_FOUND);
                 }
             }
             if (!ObjectUtils.isEmpty(employeeDto.getDistrictId())) {
                 if (districtRepository.existsById(employeeDto.getDistrictId())) {
                     district = districtRepository.getOne(employeeDto.getDistrictId());
                 } else {
-                    errors.put("District", "District not found!");
+                    errors.put("District", MessageConst.NOT_FOUND);
                 }
             }
             if (!ObjectUtils.isEmpty(employeeDto.getTownId())) {
                 if (townRepository.existsById(employeeDto.getTownId())) {
                     town = townRepository.getOne(employeeDto.getTownId());
                 } else {
-                    errors.put("Town", "Town not found!");
+                    errors.put("Town", MessageConst.NOT_FOUND);
                 }
             }
             if (!ObjectUtils.isEmpty(district) && !ObjectUtils.isEmpty(town)
                     && !district.getId().equals(town.getDistrict().getId())) {
-                errors.put("townId", "Town must belong to a district");
+                errors.put("Town", MessageConst.TOWN_NOT_BELONG_TO_DISTRICT);
             }
             if (!ObjectUtils.isEmpty(province) && !ObjectUtils.isEmpty(district)
                     && !province.getId().equals(district.getProvince().getId())) {
-                errors.put("districtId", "District must belong to a province");
+                errors.put("District", MessageConst.DISTRICT_NOT_BELONG_TO_PROVINCE);
             }
-            line++;
             if(errors.size() > 0) {
                 Map<String, String> errorLine = new HashMap<>();
-                errorLine.put("Employee in line " + line, errors.values().toString());
+                if(!ObjectUtils.isEmpty(line)) {
+                    errorLine.put("Employee in line " + line, errors.entrySet().toString());
+                } else {
+                    errorLine = errors;
+                }
                 throw new InvalidDtoException(errorLine);
+            }
+            if(!ObjectUtils.isEmpty(line)) {
+                line++;
             }
         }
         return true;

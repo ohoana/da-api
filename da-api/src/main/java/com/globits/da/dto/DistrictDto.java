@@ -1,6 +1,7 @@
 package com.globits.da.dto;
 
 import com.globits.core.domain.BaseObject;
+import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.District;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
@@ -14,10 +15,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DistrictDto extends BaseObject {
-    @NotBlank(message = "Name must not be empty",
+    @NotBlank(message = MessageConst.NOT_EMPTY,
             groups = {OnCreate.class, OnUpdate.class})
     private String name;
-    @NotNull(message = "Province must not be null",
+    @NotNull(message = MessageConst.NOT_NULL,
             groups = {OnCreate.class})
     private UUID provinceId;
     List<TownDto> townDtoList;

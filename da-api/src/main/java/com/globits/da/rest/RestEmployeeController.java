@@ -9,18 +9,19 @@ import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/employee")
@@ -79,7 +80,7 @@ public class RestEmployeeController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<List<EmployeeDto>> add(@Validated(OnCreate.class) @RequestBody EmployeeDto employeeDto) {
         List<EmployeeDto> result = null;
-        if(employeeService.isValidEmployee(Collections.singletonList(employeeDto), OnCreate.class)) {
+        if(employeeService.isValidEmployee(Collections.singletonList(employeeDto), OnCreate.class, null)) {
             result = employeeService.save(Collections.singletonList(employeeDto));
         }
         return ResponseEntity.ok()
@@ -96,7 +97,7 @@ public class RestEmployeeController {
         }
         try {
             List<EmployeeDto> dtoList = readingExcelFile.getEmployee(file);
-            if(employeeService.isValidEmployee(dtoList, OnCreate.class)) {
+            if(employeeService.isValidEmployee(dtoList, OnCreate.class, 1)) {
                 result = employeeService.save(dtoList);
             }
         } catch (IOException e) {
@@ -110,7 +111,7 @@ public class RestEmployeeController {
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<List<EmployeeDto>> update(@Validated(OnUpdate.class) @RequestBody EmployeeDto employeeDto) {
         List<EmployeeDto> result = null;
-        if(employeeService.isValidEmployee(Collections.singletonList(employeeDto), OnUpdate.class)) {
+        if(employeeService.isValidEmployee(Collections.singletonList(employeeDto), OnUpdate.class, null)) {
             result = employeeService.update(Collections.singletonList(employeeDto));
         }
         return ResponseEntity.ok()
@@ -123,13 +124,5 @@ public class RestEmployeeController {
         Boolean result = employeeService.deleteById(id);
         return ResponseEntity.ok()
                 .body(result);
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handlerInvalidArgument(MethodArgumentNotValidException e) {
-        Map<String, String> mapError = new HashMap<>();
-        e.getBindingResult().getFieldErrors().forEach(error -> mapError.put(error.getField(), error.getDefaultMessage()));
-        return mapError;
     }
 }

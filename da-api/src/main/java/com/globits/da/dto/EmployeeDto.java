@@ -1,6 +1,8 @@
 package com.globits.da.dto;
 
 import com.globits.core.domain.BaseObject;
+import com.globits.da.consts.MessageConst;
+import com.globits.da.consts.RegexConst;
 import com.globits.da.domain.Employee;
 import com.globits.da.validator.constraint.NotContainSpace;
 import com.globits.da.validator.marker.OnCreate;
@@ -16,25 +18,25 @@ import java.util.UUID;
 public class EmployeeDto extends BaseObject {
     @NotContainSpace(groups = {OnCreate.class, OnUpdate.class})
     private String code;
-    @NotBlank(message = "Name must not be empty",
+    @NotBlank(message = MessageConst.NOT_EMPTY,
             groups = {OnCreate.class, OnUpdate.class})
     private String name;
-    @Pattern(regexp = "^[\\w|.]+@[\\w]+\\.[\\w]{2,3}$", message = "Email is not valid",
+    @Pattern(regexp = RegexConst.EMAIL_REGEX, message = MessageConst.NOT_VALID,
             groups = {OnCreate.class, OnUpdate.class})
     private String email;
-    @Pattern(regexp = "(84|0[3|5|7|8|9])+([0-9]{8})", message = "Phone-number is not valid",
+    @Pattern(regexp = RegexConst.PHONE_REGEX, message = MessageConst.NOT_VALID,
             groups = {OnCreate.class, OnUpdate.class})
     private String phone;
-    @Min(value = 1,message = "Age must not be negative",
+    @Min(value = 1,message = MessageConst.NOT_VALID,
             groups = {OnCreate.class, OnUpdate.class})
     private Integer age;
-    @NotNull(message = "Province must not be empty",
+    @NotNull(message = MessageConst.NOT_EMPTY,
             groups = {OnCreate.class})
     private UUID provinceId;
-    @NotNull(message = "District must not be empty",
+    @NotNull(message = MessageConst.NOT_EMPTY,
             groups = {OnCreate.class})
     private UUID districtId;
-    @NotNull(message = "Town must not be empty",
+    @NotNull(message = MessageConst.NOT_EMPTY,
             groups = {OnCreate.class})
     private UUID townId;
 
