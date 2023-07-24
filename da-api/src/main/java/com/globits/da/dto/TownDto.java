@@ -18,6 +18,9 @@ public class TownDto extends BaseObject {
             groups = {OnCreate.class})
     private UUID districtId;
 
+    public TownDto() {
+    }
+
     public TownDto(Town town) {
         if(!ObjectUtils.isEmpty(town)) {
             this.setId(town.getId());

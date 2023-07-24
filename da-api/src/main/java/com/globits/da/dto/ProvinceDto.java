@@ -13,6 +13,9 @@ public class ProvinceDto extends BaseObject {
     private String name;
     private List<DistrictDto> districtDtoList;
 
+    public ProvinceDto() {
+    }
+
     public ProvinceDto(Province province) {
         if(!ObjectUtils.isEmpty(province)) {
             this.setId(province.getId());

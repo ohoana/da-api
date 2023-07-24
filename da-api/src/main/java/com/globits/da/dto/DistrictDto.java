@@ -22,6 +22,9 @@ public class DistrictDto extends BaseObject {
     private UUID provinceId;
     List<TownDto> townDtoList;
 
+    public DistrictDto() {
+    }
+
     public DistrictDto(District district) {
         if(!ObjectUtils.isEmpty(district)) {
             this.setId(district.getId());

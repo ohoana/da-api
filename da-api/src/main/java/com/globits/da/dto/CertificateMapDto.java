@@ -23,6 +23,9 @@ public class CertificateMapDto extends BaseObject {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expireDate;
 
+    public CertificateMapDto() {
+    }
+
     public CertificateMapDto(CertificateMap certificateMap) {
         if(!ObjectUtils.isEmpty(certificateMap)) {
             this.setId(certificateMap.getId());

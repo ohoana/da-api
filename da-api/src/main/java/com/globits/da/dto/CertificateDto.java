@@ -9,6 +9,9 @@ public class CertificateDto extends BaseObject {
     @NotBlank(message = "Name must not be empty")
     private String name;
 
+    public CertificateDto() {
+    }
+
     public CertificateDto(Certificate certificate) {
         if(certificate != null) {
             this.setId(certificate.getId());
