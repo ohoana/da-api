@@ -21,7 +21,6 @@ public class TownDto extends BaseObject {
 
     public TownDto() {
     }
-
     public TownDto(Town town) {
         if(!ObjectUtils.isEmpty(town)) {
             this.setId(town.getId());
@@ -31,7 +30,6 @@ public class TownDto extends BaseObject {
             }
         }
     }
-
     public String getName() {
         return name;
     }

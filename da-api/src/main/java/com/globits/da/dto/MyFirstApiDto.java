@@ -4,7 +4,6 @@ public class MyFirstApiDto {
     private Integer code;
     private String name;
     private Integer age;
-
     public MyFirstApiDto() {
     }
     public MyFirstApiDto(Integer code, String name, Integer age) {

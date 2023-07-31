@@ -12,14 +12,12 @@ public class CertificateDto extends BaseObject {
 
     public CertificateDto() {
     }
-
     public CertificateDto(Certificate certificate) {
         if(certificate != null) {
             this.setId(certificate.getId());
             this.name = certificate.getName();
         }
     }
-
     public String getName() {
         return name;
     }

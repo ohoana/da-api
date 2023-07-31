@@ -1,6 +1,7 @@
 package com.globits.da.service.impl;
 
 import com.globits.core.service.impl.GenericServiceImpl;
+import com.globits.da.consts.Excel;
 import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.District;
 import com.globits.da.domain.Employee;
@@ -15,7 +16,13 @@ import com.globits.da.repository.TownRepository;
 import com.globits.da.service.EmployeeService;
 import com.globits.da.utils.WriteExcelFile;
 import com.globits.da.utils.exception.InvalidDtoException;
+import com.globits.da.validator.marker.OnCreate;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,12 +30,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -141,6 +153,56 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
     }
 
     @Override
+    public List<EmployeeDto> getFromExcel(MultipartFile file) {
+        List<EmployeeDto> result = new ArrayList<>();
+        boolean hasError = false;
+        XSSFWorkbook workbook;
+        try {
+            workbook = new XSSFWorkbook(file.getInputStream());
+            int sheetIdx = 0;
+            XSSFSheet sheet = workbook.getSheetAt(sheetIdx);
+            XSSFSheet sheetError = workbook.cloneSheet(sheetIdx, "error");
+            Iterator<Row> rowIterator = sheet.rowIterator();
+            int rowIdx = 0;
+            while(rowIterator.hasNext()) {
+                XSSFRow row = (XSSFRow) rowIterator.next();
+                String code = row.getCell(Excel.COLUMN_INDEX_CODE).getStringCellValue();
+                String name = row.getCell(Excel.COLUMN_INDEX_NAME).getStringCellValue();
+                String email = row.getCell(Excel.COLUMN_INDEX_EMAIL).getStringCellValue();
+                String phone = row.getCell(Excel.COLUMN_INDEX_PHONE).getStringCellValue();
+                Integer age = (int) row.getCell(Excel.COLUMN_INDEX_AGE).getNumericCellValue();
+                UUID provinceId = UUID.fromString(row.getCell(Excel.COLUMN_INDEX_PROVINCE).getStringCellValue());
+                UUID districtId = UUID.fromString(row.getCell(Excel.COLUMN_INDEX_DISTRICT).getStringCellValue());
+                UUID townId = UUID.fromString(row.getCell(Excel.COLUMN_INDEX_TOWN).getStringCellValue());
+                EmployeeDto employeeDto = new EmployeeDto(code, name, email, phone, age, provinceId, districtId, townId);
+                try {
+                    if(isValidEmployee(employeeDto, OnCreate.class, rowIdx)) {
+                        result.add(employeeDto);
+                    }
+                } catch (InvalidDtoException ex) {
+                    XSSFRow rowError = sheetError.getRow(rowIdx);
+                    XSSFCell cellNote = rowError.createCell(Excel.COLUMN_INDEX_NOTE);
+                    cellNote.setCellValue(ex.getErrors().entrySet().toString());
+                    hasError = true;
+                }
+                rowIdx++;
+            }
+            if(hasError) {
+                try {
+                    OutputStream os = Files.newOutputStream(Paths.get(Excel.PATH_FILE_EXCEl_ERROR));
+                    workbook.write(os);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                return null;
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
     @Transactional
     public List<EmployeeDto> save(List<EmployeeDto> employeeDtoList) {
         if(!ObjectUtils.isEmpty(employeeDtoList)) {
@@ -214,81 +276,63 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
     }
 
     @Override
-    public Boolean isValidEmployee(List<EmployeeDto> employeeDtoList, Class<?> group, Integer rowIdx) {
+    public Boolean isValidEmployee(EmployeeDto employeeDto, Class<?> group, Integer rowIdx) {
         HashMap<String, String> errors = new HashMap<>();
-        Integer line = rowIdx;
-        for(EmployeeDto employeeDto : employeeDtoList) {
-            Set<ConstraintViolation<EmployeeDto>> violations = validator.validate(employeeDto, group);
-            if(!violations.isEmpty()) {
-                for(ConstraintViolation<EmployeeDto> constraintViolation : violations) {
-                    errors.put(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage());
-                }
+        Set<ConstraintViolation<EmployeeDto>> violations = validator.validate(employeeDto, group);
+        if(!violations.isEmpty()) {
+            for(ConstraintViolation<EmployeeDto> constraintViolation : violations) {
+                errors.put(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage());
             }
-
-            String sql = "SELECT COUNT(entity) FROM Employee as entity WHERE entity.code = :code ";
-            Employee employee = null;
-            if (employeeRepository.existsById(employeeDto.getId())) {
-                employee = employeeRepository.getOne(employeeDto.getId());
-                sql += "AND entity.id != :id";
+        }
+        String sql = "SELECT COUNT(entity) FROM Employee as entity WHERE entity.code = :code ";
+        Employee employee = null;
+        if (employeeRepository.existsById(employeeDto.getId())) {
+            employee = employeeRepository.getOne(employeeDto.getId());
+            sql += "AND entity.id != :id";
+        }
+        Query query = manager.createQuery(sql);
+        query.setParameter("code", employeeDto.getCode());
+        if(!ObjectUtils.isEmpty(employee)) {
+            query.setParameter("id", employeeDto.getId());
+        }
+        long count = (long) query.getSingleResult();
+        if(count > 0) {
+            errors.put("Code", MessageConst.NOT_DUPLICATE);
+        }
+        Province province = null;
+        District district = null;
+        Town town = null;
+        if(!ObjectUtils.isEmpty(employeeDto.getProvinceId())) {
+            if (provinceRepository.existsById(employeeDto.getProvinceId())) {
+                province = provinceRepository.getOne(employeeDto.getProvinceId());
+            } else {
+                errors.put("Province", MessageConst.NOT_FOUND);
             }
-
-            Query query = manager.createQuery(sql);
-
-            query.setParameter("code", employeeDto.getCode());
-
-            if(!ObjectUtils.isEmpty(employee)) {
-                query.setParameter("id", employeeDto.getId());
+        }
+        if (!ObjectUtils.isEmpty(employeeDto.getDistrictId())) {
+            if (districtRepository.existsById(employeeDto.getDistrictId())) {
+                district = districtRepository.getOne(employeeDto.getDistrictId());
+            } else {
+                errors.put("District", MessageConst.NOT_FOUND);
             }
-
-            long count = (long) query.getSingleResult();
-
-            if(count > 0) {
-                errors.put("Code", MessageConst.NOT_DUPLICATE);
+        }
+        if (!ObjectUtils.isEmpty(employeeDto.getTownId())) {
+            if (townRepository.existsById(employeeDto.getTownId())) {
+                town = townRepository.getOne(employeeDto.getTownId());
+            } else {
+                errors.put("Town", MessageConst.NOT_FOUND);
             }
-            Province province = null;
-            District district = null;
-            Town town = null;
-            if(!ObjectUtils.isEmpty(employeeDto.getProvinceId())) {
-                if (provinceRepository.existsById(employeeDto.getProvinceId())) {
-                    province = provinceRepository.getOne(employeeDto.getProvinceId());
-                } else {
-                    errors.put("Province", MessageConst.NOT_FOUND);
-                }
-            }
-            if (!ObjectUtils.isEmpty(employeeDto.getDistrictId())) {
-                if (districtRepository.existsById(employeeDto.getDistrictId())) {
-                    district = districtRepository.getOne(employeeDto.getDistrictId());
-                } else {
-                    errors.put("District", MessageConst.NOT_FOUND);
-                }
-            }
-            if (!ObjectUtils.isEmpty(employeeDto.getTownId())) {
-                if (townRepository.existsById(employeeDto.getTownId())) {
-                    town = townRepository.getOne(employeeDto.getTownId());
-                } else {
-                    errors.put("Town", MessageConst.NOT_FOUND);
-                }
-            }
-            if (!ObjectUtils.isEmpty(district) && !ObjectUtils.isEmpty(town)
-                    && !district.getId().equals(town.getDistrict().getId())) {
-                errors.put("Town", MessageConst.TOWN_NOT_BELONG_TO_DISTRICT);
-            }
-            if (!ObjectUtils.isEmpty(province) && !ObjectUtils.isEmpty(district)
-                    && !province.getId().equals(district.getProvince().getId())) {
-                errors.put("District", MessageConst.DISTRICT_NOT_BELONG_TO_PROVINCE);
-            }
-            if(errors.size() > 0) {
-                Map<String, String> errorLine = new HashMap<>();
-                if(!ObjectUtils.isEmpty(line)) {
-                    errorLine.put("Employee in line " + line, errors.entrySet().toString());
-                } else {
-                    errorLine = errors;
-                }
-                throw new InvalidDtoException(errorLine);
-            }
-            if(!ObjectUtils.isEmpty(line)) {
-                line++;
-            }
+        }
+        if (!ObjectUtils.isEmpty(district) && !ObjectUtils.isEmpty(town)
+                && !district.getId().equals(town.getDistrict().getId())) {
+            errors.put("Town", MessageConst.TOWN_NOT_BELONG_TO_DISTRICT);
+        }
+        if (!ObjectUtils.isEmpty(province) && !ObjectUtils.isEmpty(district)
+                && !province.getId().equals(district.getProvince().getId())) {
+            errors.put("District", MessageConst.DISTRICT_NOT_BELONG_TO_PROVINCE);
+        }
+        if(errors.size() > 0) {
+            throw new InvalidDtoException(errors);
         }
         return true;
     }

@@ -82,15 +82,4 @@ public class RestCategoryController {
 		Boolean result = categoryService.checkCode(id, code);
 		return new ResponseEntity<Boolean>(result, (result != null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
 	}
-
-	
-//	@GetMapping(value = "/getById/{id}")
-//	public EmployeeDTO getById(UUID id)
-//	{
-//		EmployeeDTO employeeDTO = employeeService.getById(id);
-//		return employeeDTO;
-//		
-//	}
- 
-	 
 }

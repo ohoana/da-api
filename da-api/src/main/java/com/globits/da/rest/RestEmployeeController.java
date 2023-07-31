@@ -4,13 +4,13 @@ import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.EmployeeDto;
 import com.globits.da.dto.search.EmployeeSearchDto;
 import com.globits.da.service.EmployeeService;
-import com.globits.da.utils.ReadingExcelFile;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,11 +27,9 @@ import java.util.UUID;
 @RequestMapping("/api/employee")
 public class RestEmployeeController {
     private final EmployeeService employeeService;
-    private final ReadingExcelFile readingExcelFile;
 
-    public RestEmployeeController(EmployeeService employeeService, ReadingExcelFile readingExcelFile) {
+    public RestEmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
-        this.readingExcelFile = readingExcelFile;
     }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
@@ -80,7 +78,7 @@ public class RestEmployeeController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<List<EmployeeDto>> add(@Validated(OnCreate.class) @RequestBody EmployeeDto employeeDto) {
         List<EmployeeDto> result = null;
-        if(employeeService.isValidEmployee(Collections.singletonList(employeeDto), OnCreate.class, null)) {
+        if(employeeService.isValidEmployee(employeeDto, OnCreate.class, null)) {
             result = employeeService.save(Collections.singletonList(employeeDto));
         }
         return ResponseEntity.ok()
@@ -89,19 +87,15 @@ public class RestEmployeeController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/excel", method = RequestMethod.POST)
-    public ResponseEntity<List<EmployeeDto>> addByExcelFile(@RequestParam("file")MultipartFile file) {
+    public ResponseEntity<?> addByExcelFile(@RequestParam("file")MultipartFile file) {
         List<EmployeeDto> result = new ArrayList<>();
         if(file.isEmpty()) {
             return ResponseEntity.badRequest()
                     .body(result);
         }
-        try {
-            List<EmployeeDto> dtoList = readingExcelFile.getEmployee(file);
-            if(employeeService.isValidEmployee(dtoList, OnCreate.class, 1)) {
-                result = employeeService.save(dtoList);
-            }
-        } catch (IOException e) {
-            System.out.println("error while reading file from addEmployeeExcelFile");
+        List<EmployeeDto> dtoList = employeeService.getFromExcel(file);
+        if(ObjectUtils.isEmpty(dtoList)) {
+            return ResponseEntity.ok().body("Error in Excel");
         }
         return ResponseEntity.ok()
                 .body(result);
@@ -111,7 +105,7 @@ public class RestEmployeeController {
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<List<EmployeeDto>> update(@Validated(OnUpdate.class) @RequestBody EmployeeDto employeeDto) {
         List<EmployeeDto> result = null;
-        if(employeeService.isValidEmployee(Collections.singletonList(employeeDto), OnUpdate.class, null)) {
+        if(employeeService.isValidEmployee(employeeDto, OnUpdate.class, null)) {
             result = employeeService.update(Collections.singletonList(employeeDto));
         }
         return ResponseEntity.ok()

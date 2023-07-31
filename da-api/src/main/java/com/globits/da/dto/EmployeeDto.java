@@ -43,6 +43,18 @@ public class EmployeeDto extends BaseObject {
     public EmployeeDto() {
     }
 
+    public EmployeeDto(String code, String name, String email, String phone,
+                       Integer age, UUID provinceId, UUID districtId, UUID townId) {
+        this.code = code;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.age = age;
+        this.provinceId = provinceId;
+        this.districtId = districtId;
+        this.townId = townId;
+    }
+
     public EmployeeDto(Employee employee) {
         if(!ObjectUtils.isEmpty(employee)) {
             this.setId(employee.getId());

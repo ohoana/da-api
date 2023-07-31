@@ -35,7 +35,6 @@ public class ProvinceDto extends BaseObject {
     public void setName(String name) {
         this.name = name;
     }
-
     public List<DistrictDto> getDistrictDtoList() {
         return districtDtoList;
     }
