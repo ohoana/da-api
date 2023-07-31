@@ -10,7 +10,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,16 +86,13 @@ public class RestEmployeeController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/excel", method = RequestMethod.POST)
-    public ResponseEntity<?> addByExcelFile(@RequestParam("file")MultipartFile file) {
+    public ResponseEntity<List<EmployeeDto>> addByExcelFile(@RequestParam("file")MultipartFile file) {
         List<EmployeeDto> result = new ArrayList<>();
         if(file.isEmpty()) {
             return ResponseEntity.badRequest()
                     .body(result);
         }
-        List<EmployeeDto> dtoList = employeeService.getFromExcel(file);
-        if(ObjectUtils.isEmpty(dtoList)) {
-            return ResponseEntity.ok().body("Error in Excel");
-        }
+        result = employeeService.getFromExcel(file);
         return ResponseEntity.ok()
                 .body(result);
     }

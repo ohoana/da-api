@@ -194,7 +194,9 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                return null;
+                Map<String, String> error = new HashMap<>();
+                error.put("Excel", MessageConst.ERROR_EMPLOYEE_IN_EXCEL);
+                throw new InvalidDtoException(error);
             }
         } catch (IOException ex) {
             ex.printStackTrace();

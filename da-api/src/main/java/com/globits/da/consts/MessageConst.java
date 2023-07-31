@@ -8,4 +8,5 @@ public class MessageConst {
     public static final String NOT_DUPLICATE = "This field must not be duplicate!";
     public static final String TOWN_NOT_BELONG_TO_DISTRICT = "Town must be belong to District!";
     public static final String DISTRICT_NOT_BELONG_TO_PROVINCE = "District must be belong to Province!";
+    public static final String ERROR_EMPLOYEE_IN_EXCEL = "Employee data in excel is invalid!";
 }
