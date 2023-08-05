@@ -1,10 +1,18 @@
 package com.globits.da.domain;
 
 import com.globits.core.domain.BaseObject;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "tbl_district")
 public class District extends BaseObject {
@@ -18,23 +26,4 @@ public class District extends BaseObject {
     private List<Town> towns;
     @OneToMany(mappedBy = "district")
     private List<Employee> employees;
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public Province getProvince() {
-        return province;
-    }
-    public void setProvince(Province province) {
-        this.province = province;
-    }
-    public List<Town> getTowns() {
-        return towns;
-    }
-    public void setTowns(List<Town> towns) {
-        this.towns = towns;
-    }
 }

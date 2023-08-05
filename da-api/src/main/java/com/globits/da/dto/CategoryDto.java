@@ -2,7 +2,15 @@ package com.globits.da.dto;
 
 import com.globits.core.dto.BaseObjectDto;
 import com.globits.da.domain.Category;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class CategoryDto extends BaseObjectDto{
 	private String name;
 	private String code;
@@ -13,18 +21,5 @@ public class CategoryDto extends BaseObjectDto{
 			this.code = entity.getCode();
 			this.name = entity.getName();
 		}
-	}
-
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getCode() {
-		return code;
-	}
-	public void setCode(String code) {
-		this.code = code;
 	}
 }

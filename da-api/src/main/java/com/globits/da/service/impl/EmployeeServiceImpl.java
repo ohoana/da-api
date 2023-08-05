@@ -153,7 +153,7 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
     }
 
     @Override
-    public List<EmployeeDto> getFromExcel(MultipartFile file) {
+    public List<EmployeeDto> addFromExcel(MultipartFile file) {
         List<EmployeeDto> result = new ArrayList<>();
         boolean hasError = false;
         XSSFWorkbook workbook;
@@ -201,7 +201,7 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        return result;
+        return save(result);
     }
 
     @Override

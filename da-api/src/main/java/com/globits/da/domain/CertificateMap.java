@@ -1,10 +1,18 @@
 package com.globits.da.domain;
 
 import com.globits.core.domain.BaseObject;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "tbl_certificate_map")
 public class CertificateMap extends BaseObject {
@@ -22,38 +30,4 @@ public class CertificateMap extends BaseObject {
     private LocalDateTime beginDate;
     @Column(name = "expire_date")
     private LocalDateTime expireDate;
-
-    public CertificateMap() {
-    }
-
-    public Employee getEmployee() {
-        return employee;
-    }
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
-    public Certificate getCertificate() {
-        return certificate;
-    }
-    public void setCertificate(Certificate certificate) {
-        this.certificate = certificate;
-    }
-    public Province getProvince() {
-        return province;
-    }
-    public void setProvince(Province province) {
-        this.province = province;
-    }
-    public LocalDateTime getBeginDate() {
-        return beginDate;
-    }
-    public void setBeginDate(LocalDateTime beginDate) {
-        this.beginDate = beginDate;
-    }
-    public LocalDateTime getExpireDate() {
-        return expireDate;
-    }
-    public void setExpireDate(LocalDateTime expireDate) {
-        this.expireDate = expireDate;
-    }
 }

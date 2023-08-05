@@ -14,7 +14,7 @@ public interface EmployeeService {
     Page<EmployeeDto> search(EmployeeSearchDto searchDto);
     EmployeeDto findByCode(String code);
     List<EmployeeDto> getAll();
-    List<EmployeeDto> getFromExcel(MultipartFile file);
+    List<EmployeeDto> addFromExcel(MultipartFile file);
     List<EmployeeDto> save(List<EmployeeDto> employeeDtoList);
     List<EmployeeDto> update(List<EmployeeDto> employeeDtoList);
     Boolean deleteById(UUID id);

@@ -5,6 +5,10 @@ import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.District;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotBlank;
@@ -14,6 +18,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class DistrictDto extends BaseObject {
     @NotBlank(message = MessageConst.NOT_EMPTY,
             groups = {OnCreate.class, OnUpdate.class})
@@ -21,10 +29,7 @@ public class DistrictDto extends BaseObject {
     @NotNull(message = MessageConst.NOT_NULL,
             groups = {OnCreate.class})
     private UUID provinceId;
-    List<TownDto> townDtoList;
-
-    public DistrictDto() {
-    }
+    private List<TownDto> townDtoList;
 
     public DistrictDto(District district) {
         if(!ObjectUtils.isEmpty(district)) {
@@ -40,16 +45,4 @@ public class DistrictDto extends BaseObject {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public UUID getProvinceId() {
-        return provinceId;
-    }
-    public List<TownDto> getTownDtoList() {
-        return townDtoList;
-    }
 }

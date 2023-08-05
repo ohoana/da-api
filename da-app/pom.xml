@@ -88,6 +88,12 @@
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- Spring framework -->
 		<dependency>
 			<groupId>org.springframework</groupId>

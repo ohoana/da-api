@@ -92,7 +92,7 @@ public class RestEmployeeController {
             return ResponseEntity.badRequest()
                     .body(result);
         }
-        result = employeeService.getFromExcel(file);
+        result = employeeService.addFromExcel(file);
         return ResponseEntity.ok()
                 .body(result);
     }

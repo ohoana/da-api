@@ -5,12 +5,20 @@ import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.Town;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class TownDto extends BaseObject {
     @NotBlank(message = MessageConst.NOT_EMPTY,
             groups = {OnCreate.class, OnUpdate.class})
@@ -19,8 +27,6 @@ public class TownDto extends BaseObject {
             groups = {OnCreate.class})
     private UUID districtId;
 
-    public TownDto() {
-    }
     public TownDto(Town town) {
         if(!ObjectUtils.isEmpty(town)) {
             this.setId(town.getId());
@@ -29,14 +35,5 @@ public class TownDto extends BaseObject {
                 this.districtId = town.getDistrict().getId();
             }
         }
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public UUID getDistrictId() {
-        return districtId;
     }
 }
