@@ -1,5 +1,6 @@
 package com.globits.da.service.impl;
 
+import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.District;
 import com.globits.da.domain.Province;
 import com.globits.da.domain.Town;
@@ -143,7 +144,7 @@ public class DistrictServiceImpl implements DistrictService {
         }
         if(!ObjectUtils.isEmpty(dto.getProvinceId()) &&
                 !provinceRepository.existsById(dto.getProvinceId())) {
-            errors.put("Province", "Not found!");
+            errors.put("Province", MessageConst.NOT_FOUND);
         }
         if(!errors.isEmpty()) {
             throw new InvalidDtoException(errors);

@@ -8,7 +8,7 @@ import com.globits.da.dto.CertificateMapDto;
 import com.globits.da.repository.CertificateRepository;
 import com.globits.da.repository.EmployeeRepository;
 import com.globits.da.repository.ProvinceRepository;
-import com.globits.da.repository.ReleaseInforRepository;
+import com.globits.da.repository.CertificateMapRepository;
 import com.globits.da.service.CertificateMapService;
 import com.globits.da.utils.exception.InvalidDtoException;
 import org.springframework.stereotype.Service;
@@ -22,16 +22,16 @@ import java.util.UUID;
 
 @Service
 public class CertificateMapServiceImpl implements CertificateMapService {
-    private final ReleaseInforRepository releaseInforRepository;
+    private final CertificateMapRepository certificateMapRepository;
     private final EmployeeRepository employeeRepository;
     private final ProvinceRepository provinceRepository;
     private final CertificateRepository certificateRepository;
 
-    public CertificateMapServiceImpl(ReleaseInforRepository releaseInforRepository,
+    public CertificateMapServiceImpl(CertificateMapRepository certificateMapRepository,
                                      EmployeeRepository employeeRepository,
                                      ProvinceRepository provinceRepository,
                                      CertificateRepository certificateRepository) {
-        this.releaseInforRepository = releaseInforRepository;
+        this.certificateMapRepository = certificateMapRepository;
         this.employeeRepository = employeeRepository;
         this.provinceRepository = provinceRepository;
         this.certificateRepository = certificateRepository;
@@ -39,12 +39,12 @@ public class CertificateMapServiceImpl implements CertificateMapService {
 
     @Override
     public List<CertificateMapDto> getAll() {
-        return releaseInforRepository.getAll();
+        return certificateMapRepository.getAll();
     }
 
     @Override
     public List<CertificateMapDto> getByEmployeeId(UUID id) {
-        return releaseInforRepository.getByEmployeeId(id);
+        return certificateMapRepository.getByEmployeeId(id);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class CertificateMapServiceImpl implements CertificateMapService {
                 if(!ObjectUtils.isEmpty(dto.getId()) && !id.equals(dto.getId())) {
                     return null;
                 }
-                certificateMap = releaseInforRepository.getOne(id);
+                certificateMap = certificateMapRepository.getOne(id);
             }
 
             if(ObjectUtils.isEmpty(certificateMap)) {
@@ -74,7 +74,7 @@ public class CertificateMapServiceImpl implements CertificateMapService {
                 certificateMap.setBeginDate(dto.getBeginDate());
                 certificateMap.setExpireDate(dto.getExpireDate());
 
-                certificateMap = releaseInforRepository.save(certificateMap);
+                certificateMap = certificateMapRepository.save(certificateMap);
 
                 if(!ObjectUtils.isEmpty(certificateMap)) {
                     return new CertificateMapDto(certificateMap);
@@ -91,7 +91,7 @@ public class CertificateMapServiceImpl implements CertificateMapService {
     @Override
     public Boolean deleteById(UUID id) {
         if(!ObjectUtils.isEmpty(id)) {
-            releaseInforRepository.deleteById(id);
+            certificateMapRepository.deleteById(id);
             return true;
         }
         return false;
@@ -116,11 +116,11 @@ public class CertificateMapServiceImpl implements CertificateMapService {
         }
 
         int numOfCertificateInUse =
-                releaseInforRepository.countCertificateInUse(dto.getEmployeeId(), dto.getCertificateId());
+                certificateMapRepository.countCertificateInUse(dto.getEmployeeId(), dto.getCertificateId());
         if(numOfCertificateInUse >= 3) {
             errors.put("Certificate", "Must not have over 3 certificate same type");
         }
-        if(!ObjectUtils.isEmpty(releaseInforRepository
+        if(!ObjectUtils.isEmpty(certificateMapRepository
                 .getCertificateInUseByProvinceId(dto.getEmployeeId(),
                         dto.getCertificateId(),
                         dto.getProvinceId()))) {

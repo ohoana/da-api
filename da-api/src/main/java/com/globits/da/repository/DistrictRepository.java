@@ -14,6 +14,6 @@ public interface DistrictRepository extends JpaRepository<District, UUID> {
     @Query("SELECT new com.globits.da.dto.DistrictDto(entity) FROM District entity")
     List<DistrictDto> getAll();
     @Query("SELECT new com.globits.da.dto.DistrictDto(entity) FROM District entity WHERE entity.province.id = ?1")
-    List<DistrictDto> findByProvinceId(UUID proviceId);
+    List<DistrictDto> findByProvinceId(UUID provinceId);
 }
 

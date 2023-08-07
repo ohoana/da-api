@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ReleaseInforRepository extends JpaRepository<CertificateMap, UUID> {
+public interface CertificateMapRepository extends JpaRepository<CertificateMap, UUID> {
     @Query("SELECT new com.globits.da.dto.CertificateMapDto(entity) FROM CertificateMap entity")
     List<CertificateMapDto> getAll();
     @Query("SELECT new com.globits.da.dto.CertificateMapDto(entity) FROM CertificateMap entity " +

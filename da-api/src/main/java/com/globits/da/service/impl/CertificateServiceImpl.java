@@ -18,7 +18,6 @@ import java.util.UUID;
 @Service
 public class CertificateServiceImpl implements CertificateService {
     private final CertificateRepository repository;
-
     public CertificateServiceImpl(CertificateRepository repository) {
         this.repository = repository;
     }

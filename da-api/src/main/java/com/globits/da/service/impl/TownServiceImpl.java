@@ -1,5 +1,6 @@
 package com.globits.da.service.impl;
 
+import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.District;
 import com.globits.da.domain.Town;
 import com.globits.da.dto.TownDto;
@@ -66,7 +67,6 @@ public class TownServiceImpl implements TownService {
             if(ObjectUtils.isEmpty(town)) {
                 town = new Town();
             }
-
             try {
                 town.setName(dto.getName());
                 if(!ObjectUtils.isEmpty(dto.getDistrictId())) {
@@ -79,7 +79,7 @@ public class TownServiceImpl implements TownService {
                 }
             } catch (EntityNotFoundException e) {
                 Map<String, String> errors = new HashMap<>();
-                errors.put("Town", "Not found!");
+                errors.put("Town", MessageConst.NOT_FOUND);
                 throw new InvalidDtoException(errors);
             }
         }
@@ -136,7 +136,7 @@ public class TownServiceImpl implements TownService {
         }
         if(!ObjectUtils.isEmpty(dto.getDistrictId()) &&
                 !districtRepository.existsById(dto.getDistrictId())) {
-            errors.put("District", "Not found!");
+            errors.put("District", MessageConst.NOT_FOUND);
         }
         if(!errors.isEmpty()) {
             throw new InvalidDtoException(errors);

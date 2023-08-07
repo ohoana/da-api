@@ -30,15 +30,12 @@ public class MyFirstApiServiceImpl implements MyFirstApiService {
         try {
             BufferedReader reader = request.getReader();
             StringBuilder buffer = new StringBuilder();
-
             String line;
             while((line = reader.readLine()) != null) {
                 buffer.append(line);
             }
             String payload = buffer.toString();
-
             ObjectMapper objectMapper = new ObjectMapper();
-
             return objectMapper.readValue(payload, MyFirstApiDto.class);
         } catch(IOException e) {
             Map<String, String> errors = new HashMap<>();

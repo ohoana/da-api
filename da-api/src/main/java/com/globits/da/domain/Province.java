@@ -20,6 +20,6 @@ public class Province extends BaseObject {
     private List<District> districts;
     @OneToMany(mappedBy = "province", fetch = FetchType.LAZY)
     private List<Employee> employees;
-    @OneToMany(mappedBy = "province")
+    @OneToMany(mappedBy = "province", cascade = {CascadeType.ALL})
     private List<CertificateMap> releases;
 }

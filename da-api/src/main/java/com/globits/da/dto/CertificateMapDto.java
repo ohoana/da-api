@@ -3,6 +3,7 @@ package com.globits.da.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.globits.core.domain.BaseObject;
 import com.globits.da.consts.MessageConst;
+import com.globits.da.consts.RegexConst;
 import com.globits.da.domain.CertificateMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,10 +27,10 @@ public class CertificateMapDto extends BaseObject {
     @NotNull(message = MessageConst.NOT_NULL)
     private UUID certificateId;
     @NotNull(message = MessageConst.NOT_NULL)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = RegexConst.DATE_REGEX)
     private LocalDateTime beginDate;
     @NotNull(message = MessageConst.NOT_NULL)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = RegexConst.DATE_REGEX)
     private LocalDateTime expireDate;
     public CertificateMapDto(CertificateMap certificateMap) {
         if(!ObjectUtils.isEmpty(certificateMap)) {
