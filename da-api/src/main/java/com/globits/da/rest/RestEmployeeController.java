@@ -3,14 +3,12 @@ package com.globits.da.rest;
 import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.EmployeeDto;
 import com.globits.da.dto.search.EmployeeSearchDto;
+import com.globits.da.exception.InvalidInputException;
 import com.globits.da.service.EmployeeService;
-import com.globits.da.validator.marker.OnCreate;
-import com.globits.da.validator.marker.OnUpdate;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,14 +41,17 @@ public class RestEmployeeController {
     @RequestMapping(value = "/paging/{pageIndex}/{pageSize}", method = RequestMethod.GET)
     public ResponseEntity<Page<EmployeeDto>> getPage(@PathVariable Integer pageIndex,
                                                                @PathVariable Integer pageSize) {
-        Page<EmployeeDto> result = employeeService.getPage(pageIndex, pageSize);
+        Page<EmployeeDto> result = Page.empty();
+        if(employeeService.isValidPage(pageIndex, pageSize)) {
+            result = employeeService.getPage(pageIndex, pageSize);
+        }
         return ResponseEntity.ok()
                 .body(result);
     }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public ResponseEntity<Page<EmployeeDto>> getBySearchDto(@RequestBody EmployeeSearchDto dto) {
+    public ResponseEntity<Page<EmployeeDto>> getBySearchDto(@RequestBody EmployeeSearchDto dto) throws InvalidInputException {
         Page<EmployeeDto> result = employeeService.search(dto);
         return ResponseEntity.ok()
                 .body(result);
@@ -75,18 +76,15 @@ public class RestEmployeeController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<List<EmployeeDto>> add(@Validated(OnCreate.class) @RequestBody EmployeeDto employeeDto) {
-        List<EmployeeDto> result = null;
-        if(employeeService.isValidEmployee(employeeDto, OnCreate.class, null)) {
-            result = employeeService.save(Collections.singletonList(employeeDto));
-        }
+    public ResponseEntity<List<EmployeeDto>> add(@RequestBody EmployeeDto employeeDto) throws InvalidInputException {
+        List<EmployeeDto> result = employeeService.save(Collections.singletonList(employeeDto));
         return ResponseEntity.ok()
                 .body(result);
     }
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/excel", method = RequestMethod.POST)
-    public ResponseEntity<List<EmployeeDto>> addByExcelFile(@RequestParam("file")MultipartFile file) {
+    public ResponseEntity<List<EmployeeDto>> addByExcelFile(@RequestParam("file")MultipartFile file) throws InvalidInputException, IOException {
         List<EmployeeDto> result = new ArrayList<>();
         if(file.isEmpty()) {
             return ResponseEntity.badRequest()
@@ -99,11 +97,8 @@ public class RestEmployeeController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<List<EmployeeDto>> update(@Validated(OnUpdate.class) @RequestBody EmployeeDto employeeDto) {
-        List<EmployeeDto> result = null;
-        if(employeeService.isValidEmployee(employeeDto, OnUpdate.class, null)) {
-            result = employeeService.update(Collections.singletonList(employeeDto));
-        }
+    public ResponseEntity<List<EmployeeDto>> update(@RequestBody EmployeeDto employeeDto) throws InvalidInputException {
+        List<EmployeeDto> result = employeeService.update(Collections.singletonList(employeeDto));
         return ResponseEntity.ok()
                 .body(result);
     }

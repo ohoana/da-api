@@ -1,17 +1,17 @@
 package com.globits.da.service.impl;
 
+import com.globits.da.commons.ApiMessageError;
 import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.District;
 import com.globits.da.domain.Province;
-import com.globits.da.domain.Town;
 import com.globits.da.dto.DistrictDto;
+import com.globits.da.exception.InvalidDtoException;
+import com.globits.da.exception.InvalidInputException;
 import com.globits.da.repository.DistrictRepository;
 import com.globits.da.repository.ProvinceRepository;
 import com.globits.da.service.DistrictService;
-import com.globits.da.service.TownService;
-import com.globits.da.utils.exception.InvalidDtoException;
+import com.globits.da.utils.InjectParam;
 import com.globits.da.validator.marker.OnUpdate;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -24,24 +24,20 @@ import java.util.*;
 public class DistrictServiceImpl implements DistrictService {
     private final DistrictRepository districtRepository;
     private final ProvinceRepository provinceRepository;
-    private final TownService townService;
     private final Validator validator;
+    private final InjectParam injectParam;
 
-    public DistrictServiceImpl(DistrictRepository districtRepository, ProvinceRepository provinceRepository, TownService townService, Validator validator) {
+    public DistrictServiceImpl(DistrictRepository districtRepository, ProvinceRepository provinceRepository, Validator validator, InjectParam injectParam) {
         this.districtRepository = districtRepository;
         this.provinceRepository = provinceRepository;
-        this.townService = townService;
         this.validator = validator;
+        this.injectParam = injectParam;
     }
 
     @Override
     public DistrictDto getById(UUID id) {
-        try {
-            District district = districtRepository.getOne(id);
-            return new DistrictDto(district);
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
+        District district = districtRepository.getOne(id);
+        return new DistrictDto(district);
     }
 
     @Override
@@ -55,80 +51,56 @@ public class DistrictServiceImpl implements DistrictService {
     }
 
     @Override
-    public DistrictDto saveOrUpdate(DistrictDto dto, UUID id) {
-        if(!ObjectUtils.isEmpty(dto)) {
-            District district = null;
-            if(!ObjectUtils.isEmpty(id)) {
-                if(!ObjectUtils.isEmpty(dto.getId()) && !id.equals(dto.getId())) {
-                    return null;
-                }
-                district = districtRepository.getOne(id);
-            }
-            if(ObjectUtils.isEmpty(district)) {
-                district = new District();
-            }
-            try {
-                if(!ObjectUtils.isEmpty(dto.getProvinceId())) {
-                    Province province = provinceRepository.getOne(dto.getProvinceId());
-                    district.setProvince(province);
-                }
-                district.setName(dto.getName());
-                district = districtRepository.save(district);
-                List<Town> towns = townService.saveOrUpdateList(dto.getTownDtoList(), district);
-                district.setTowns(towns);
-                district = districtRepository.save(district);
-                if(!ObjectUtils.isEmpty(district)) {
-                    return new DistrictDto(district);
-                }
-            } catch (EntityNotFoundException e) {
-                Map<String, String> errors = new HashMap<>();
-                errors.put("District", "Not found!");
-                throw new InvalidDtoException(errors);
-            }
+    public DistrictDto save(DistrictDto dto) throws InvalidInputException {
+        if(ObjectUtils.isEmpty(dto)) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.DTO_NOT_NULL)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
         }
-        return null;
+        District district = new District();
+        Province province = provinceRepository.getOne(dto.getProvinceId());
+        injectParam.setDistrictValue(district, dto, province);
+        district = districtRepository.save(district);
+        return new DistrictDto(district);
     }
 
     @Override
-    public List<District> saveOrUpdateList(List<DistrictDto> dtos, Province province) {
-        List<District> districts = new ArrayList<>();
-        if(!ObjectUtils.isEmpty(dtos)) {
-            for(DistrictDto dto : dtos) {
-                if(isValidDto(dto)) {
-                    District district = null;
-                    try {
-                        district = districtRepository.getOne(dto.getId());
-                        district.setName(dto.getName());
-                        district.setProvince(province);
-                    } catch (EntityNotFoundException e) {
-                        district = new District();
-                        district.setName(dto.getName());
-                        district.setProvince(province);
-                    } finally {
-                        if(!ObjectUtils.isEmpty(district)) {
-                            district = districtRepository.save(district);
-                            List<Town> towns = townService.saveOrUpdateList(dto.getTownDtoList(), district);
-                            district.setTowns(towns);
-                            districts.add(district);
-                        }
-                    }
-                }
-            }
-            return districts;
+    public DistrictDto update(DistrictDto dto, UUID id) throws InvalidInputException {
+        if(ObjectUtils.isEmpty(dto)) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.DTO_NOT_NULL)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
         }
-        return null;
+        if(!id.equals(dto.getId())) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.ID_UPDATE_NOT_MATCH)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
+        Optional<District> districtOpt = districtRepository.findById(dto.getId());
+        if(districtOpt.isPresent()) {
+            District district = districtOpt.get();
+            Province province = !ObjectUtils.isEmpty(dto.getProvinceId())
+                    ? provinceRepository.getOne(dto.getProvinceId())
+                    : null;
+            injectParam.setDistrictValue(district, dto, province);
+            district = districtRepository.save(district);
+            return new DistrictDto(district);
+        } else {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.NOT_FOUND)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
     }
-
 
     @Override
     public Boolean delete(UUID id) {
-        if(!ObjectUtils.isEmpty(id)) {
-            try {
-                districtRepository.deleteById(id);
-                return true;
-            } catch (EmptyResultDataAccessException e) {
-                return false;
-            }
+        if(!ObjectUtils.isEmpty(id) && districtRepository.existsById(id)) {
+            districtRepository.deleteById(id);
+            return true;
         }
         return false;
     }

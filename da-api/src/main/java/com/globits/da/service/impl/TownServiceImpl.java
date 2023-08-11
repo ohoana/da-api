@@ -1,20 +1,21 @@
 package com.globits.da.service.impl;
 
+import com.globits.da.commons.ApiMessageError;
 import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.District;
 import com.globits.da.domain.Town;
 import com.globits.da.dto.TownDto;
+import com.globits.da.exception.InvalidInputException;
 import com.globits.da.repository.DistrictRepository;
 import com.globits.da.repository.TownRepository;
 import com.globits.da.service.TownService;
-import com.globits.da.utils.exception.InvalidDtoException;
+import com.globits.da.exception.InvalidDtoException;
+import com.globits.da.utils.InjectParam;
 import com.globits.da.validator.marker.OnUpdate;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.*;
@@ -24,13 +25,15 @@ public class TownServiceImpl implements TownService {
     private final TownRepository townRepository;
     private final DistrictRepository districtRepository;
     private final Validator validator;
+    private final InjectParam injectParam;
 
     public TownServiceImpl(TownRepository townRepository,
                            DistrictRepository districtRepository,
-                           Validator validator) {
+                           Validator validator, InjectParam injectParam) {
         this.townRepository = townRepository;
         this.districtRepository = districtRepository;
         this.validator = validator;
+        this.injectParam = injectParam;
     }
 
     @Override
@@ -54,73 +57,56 @@ public class TownServiceImpl implements TownService {
     }
 
     @Override
-    public TownDto saveOrUpdate(TownDto dto, UUID id) {
-        if(!ObjectUtils.isEmpty(dto)) {
-            Town town = null;
-            if(!ObjectUtils.isEmpty(id)) {
-                if(!ObjectUtils.isEmpty(dto.getId()) && !id.equals(dto.getId())) {
-                    return null;
-                }
-                town = townRepository.getOne(id);
-            }
-
-            if(ObjectUtils.isEmpty(town)) {
-                town = new Town();
-            }
-            try {
-                town.setName(dto.getName());
-                if(!ObjectUtils.isEmpty(dto.getDistrictId())) {
-                    District district = districtRepository.getOne(dto.getDistrictId());
-                    town.setDistrict(district);
-                }
-                town = townRepository.save(town);
-                if(!ObjectUtils.isEmpty(town)) {
-                    return new TownDto(town);
-                }
-            } catch (EntityNotFoundException e) {
-                Map<String, String> errors = new HashMap<>();
-                errors.put("Town", MessageConst.NOT_FOUND);
-                throw new InvalidDtoException(errors);
-            }
+    public TownDto save(TownDto dto) throws InvalidInputException {
+        if(ObjectUtils.isEmpty(dto)) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.DTO_NOT_NULL)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
         }
-        return null;
+        Town town = new Town();
+        District district = districtRepository.getOne(dto.getDistrictId());
+        injectParam.setTownValue(town, dto, district);
+        town = townRepository.save(town);
+        return new TownDto(town);
     }
 
     @Override
-    @Transactional
-    public List<Town> saveOrUpdateList(List<TownDto> dtos, District district) {
-        if(!ObjectUtils.isEmpty(dtos)) {
-            List<Town> towns = new ArrayList<>();
-            for(TownDto dto : dtos) {
-                if(isValidDto(dto)) {
-                    Town town;
-                    try {
-                        town = townRepository.getOne(dto.getId());
-                        town.setName(dto.getName());
-                        town.setDistrict(district);
-                    } catch (EntityNotFoundException e) {
-                        town = new Town();
-                        town.setName(dto.getName());
-                        town.setDistrict(district);
-                    }
-                    towns.add(town);
-                }
-            }
-            return towns;
+    public TownDto update(TownDto dto, UUID id) throws InvalidInputException {
+        if(ObjectUtils.isEmpty(dto)) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.DTO_NOT_NULL)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
         }
-        return null;
+        if(!id.equals(dto.getId())) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.ID_UPDATE_NOT_MATCH)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
+        Optional<Town> townOpt = townRepository.findById(dto.getId());
+        if(townOpt.isPresent()) {
+            Town town = townOpt.get();
+            District district = ObjectUtils.isEmpty(dto.getDistrictId())
+                    ? districtRepository.getOne(dto.getDistrictId())
+                    : null;
+            injectParam.setTownValue(town, dto, district);
+            town = townRepository.save(town);
+            return new TownDto(town);
+        } else {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.NOT_FOUND)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
     }
-
 
     @Override
     public Boolean delete(UUID id) {
-        if(!ObjectUtils.isEmpty(id)) {
-            try {
-                townRepository.deleteById(id);
-                return true;
-            } catch (EmptyResultDataAccessException e) {
-                return false;
-            }
+        if(!ObjectUtils.isEmpty(id) && townRepository.existsById(id)) {
+            townRepository.deleteById(id);
+            return true;
         }
         return false;
     }

@@ -1,5 +1,6 @@
 package com.globits.da.service.impl;
 
+import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.Certificate;
 import com.globits.da.domain.CertificateMap;
 import com.globits.da.domain.Employee;
@@ -10,7 +11,7 @@ import com.globits.da.repository.EmployeeRepository;
 import com.globits.da.repository.ProvinceRepository;
 import com.globits.da.repository.CertificateMapRepository;
 import com.globits.da.service.CertificateMapService;
-import com.globits.da.utils.exception.InvalidDtoException;
+import com.globits.da.exception.InvalidDtoException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -90,7 +91,7 @@ public class CertificateMapServiceImpl implements CertificateMapService {
 
     @Override
     public Boolean deleteById(UUID id) {
-        if(!ObjectUtils.isEmpty(id)) {
+        if(!ObjectUtils.isEmpty(id) && certificateMapRepository.existsById(id)) {
             certificateMapRepository.deleteById(id);
             return true;
         }
@@ -99,34 +100,30 @@ public class CertificateMapServiceImpl implements CertificateMapService {
 
     @Override
     public Boolean isValidDto(CertificateMapDto dto) {
-
         Map<String, String> errors = new HashMap<>();
-
         if(!ObjectUtils.isEmpty(dto.getEmployeeId())
                 && !employeeRepository.existsById(dto.getEmployeeId())) {
-            errors.put("Employee", "Not found!");
+            errors.put("Employee", MessageConst.NOT_FOUND);
         }
         if(!ObjectUtils.isEmpty(dto.getCertificateId())
                 && !certificateRepository.existsById(dto.getCertificateId())) {
-            errors.put("Certificate", "Not found!");
+            errors.put("Certificate", MessageConst.NOT_FOUND);
         }
         if(!ObjectUtils.isEmpty(dto.getProvinceId())
                 && !provinceRepository.existsById(dto.getProvinceId())) {
-            errors.put("Province", "Not found!");
+            errors.put("Province", MessageConst.NOT_FOUND);
         }
-
         int numOfCertificateInUse =
                 certificateMapRepository.countCertificateInUse(dto.getEmployeeId(), dto.getCertificateId());
         if(numOfCertificateInUse >= 3) {
-            errors.put("Certificate", "Must not have over 3 certificate same type");
+            errors.put("Certificate", MessageConst.CERTIFICATE_SAME_TYPE_ERROR);
         }
         if(!ObjectUtils.isEmpty(certificateMapRepository
                 .getCertificateInUseByProvinceId(dto.getEmployeeId(),
                         dto.getCertificateId(),
                         dto.getProvinceId()))) {
-            errors.put("Certificate", "Must not have more certificate same type confer by same Province");
+            errors.put("Certificate", MessageConst.CERTIFICATE_LIMIT_ERROR);
         }
-
         if(!errors.isEmpty()) {
             throw new InvalidDtoException(errors);
         }

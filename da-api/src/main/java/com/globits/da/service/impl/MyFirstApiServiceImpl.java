@@ -2,7 +2,7 @@ package com.globits.da.service.impl;
 
 import com.globits.da.dto.MyFirstApiDto;
 import com.globits.da.service.MyFirstApiService;
-import com.globits.da.utils.exception.InvalidDtoException;
+import com.globits.da.exception.InvalidDtoException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;

@@ -2,6 +2,7 @@ package com.globits.da.rest;
 
 import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.TownDto;
+import com.globits.da.exception.InvalidInputException;
 import com.globits.da.service.TownService;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
@@ -47,11 +48,11 @@ public class RestTownController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<TownDto> add(@Validated(OnCreate.class) @RequestBody TownDto dto) {
+    public ResponseEntity<TownDto> add(@Validated(OnCreate.class) @RequestBody TownDto dto) throws InvalidInputException {
         if(!townService.isValidDto(dto)) {
             return ResponseEntity.badRequest().build();
         }
-        TownDto result = townService.saveOrUpdate(dto, null);
+        TownDto result = townService.save(dto);
         return ResponseEntity.ok()
                 .body(result);
     }
@@ -59,11 +60,11 @@ public class RestTownController {
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<TownDto> update(@Validated(OnUpdate.class) @RequestBody TownDto dto,
-                                                      @PathVariable UUID id) {
+                                                      @PathVariable UUID id) throws InvalidInputException {
         if(!townService.isValidDto(dto)) {
             return ResponseEntity.badRequest().build();
         }
-        TownDto result = townService.saveOrUpdate(dto, id);
+        TownDto result = townService.update(dto, id);
         return ResponseEntity.ok()
                 .body(result);
     }

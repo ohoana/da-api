@@ -2,6 +2,7 @@ package com.globits.da.rest;
 
 import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.ProvinceDto;
+import com.globits.da.exception.InvalidInputException;
 import com.globits.da.service.ProvinceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -38,8 +39,8 @@ public class RestProvinceController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<ProvinceDto> add(@Valid @RequestBody ProvinceDto dto) {
-        ProvinceDto result = provinceService.saveOrUpdate(dto, null);
+    public ResponseEntity<ProvinceDto> add(@Valid @RequestBody ProvinceDto dto) throws InvalidInputException {
+        ProvinceDto result = provinceService.save(dto);
         return ResponseEntity.ok()
                 .body(result);
     }
@@ -47,8 +48,8 @@ public class RestProvinceController {
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<ProvinceDto> update(@Valid @RequestBody ProvinceDto dto,
-                                                     @PathVariable UUID id) {
-        ProvinceDto result = provinceService.saveOrUpdate(dto, id);
+                                                     @PathVariable UUID id) throws InvalidInputException {
+        ProvinceDto result = provinceService.update(dto, id);
         return ResponseEntity.ok()
                 .body(result);
     }

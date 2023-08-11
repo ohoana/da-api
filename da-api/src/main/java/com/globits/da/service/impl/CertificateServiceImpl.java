@@ -1,34 +1,43 @@
 package com.globits.da.service.impl;
 
+import com.globits.da.commons.ApiMessageError;
+import com.globits.da.commons.ApiValidatorError;
+import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.Certificate;
 import com.globits.da.dto.CertificateDto;
+import com.globits.da.exception.DataNotFoundException;
+import com.globits.da.exception.InvalidInputException;
 import com.globits.da.repository.CertificateRepository;
 import com.globits.da.service.CertificateService;
-import com.globits.da.utils.exception.InvalidDtoException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import com.globits.da.utils.InjectParam;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
     private final CertificateRepository repository;
-    public CertificateServiceImpl(CertificateRepository repository) {
+    private final InjectParam injectParam;
+    public CertificateServiceImpl(CertificateRepository repository, InjectParam injectParam) {
         this.repository = repository;
+        this.injectParam = injectParam;
     }
 
     @Override
     public CertificateDto getById(UUID id) {
-        try {
-            Certificate certificate = repository.getOne(id);
-            return new CertificateDto(certificate);
-        } catch (EntityNotFoundException e) {
-            return null;
+
+        Optional<Certificate> certificateOpt = repository.findById(id);
+        if(certificateOpt.isPresent()) {
+            return new CertificateDto(certificateOpt.get());
+        } else {
+            ApiValidatorError apiValidatorError = ApiValidatorError.builder()
+                    .field("id")
+                    .message(MessageConst.ENTITY_NOT_FOUND)
+                    .build();
+            throw new DataNotFoundException(apiValidatorError);
         }
     }
 
@@ -38,42 +47,53 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public CertificateDto saveOrUpdate(CertificateDto dto, UUID id) {
-        if(!ObjectUtils.isEmpty(dto)) {
-            Certificate certificate = null;
-            if(!ObjectUtils.isEmpty(id)) {
-                if(!ObjectUtils.isEmpty(dto.getId()) && !id.equals(dto.getId())) {
-                    return null;
-                }
-                certificate = repository.getOne(id);
-            }
-            if(ObjectUtils.isEmpty(certificate)) {
-                certificate = new Certificate();
-            }
-            try {
-                certificate.setName(dto.getName());
-                certificate = repository.save(certificate);
-                if(!ObjectUtils.isEmpty(certificate)) {
-                    return new CertificateDto(certificate);
-                }
-            } catch (EntityNotFoundException e) {
-                Map<String, String> errors = new HashMap<>();
-                errors.put("Certificate", "Not found!");
-                throw new InvalidDtoException(errors);
-            }
+    public CertificateDto save(CertificateDto dto) throws InvalidInputException {
+        if(ObjectUtils.isEmpty(dto)) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.DTO_NOT_NULL)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
         }
-        return null;
+        Certificate certificate = new Certificate();
+        injectParam.setCertificateValue(certificate, dto);
+        certificate = repository.save(certificate);
+        return new CertificateDto(certificate);
+    }
+
+    @Override
+    public CertificateDto update(CertificateDto dto, UUID id) throws InvalidInputException {
+        if(ObjectUtils.isEmpty(dto)) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.DTO_NOT_NULL)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
+        if(!id.equals(dto.getId())) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.ID_UPDATE_NOT_MATCH)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
+        Optional<Certificate> certificateOptional = repository.findById(dto.getId());
+        if(certificateOptional.isPresent()) {
+            Certificate certificate = certificateOptional.get();
+            injectParam.setCertificateValue(certificate, dto);
+            certificate = repository.save(certificate);
+            return new CertificateDto(certificate);
+        } else {
+            ApiValidatorError apiValidatorError = ApiValidatorError.builder()
+                    .field("Certificate")
+                    .message(MessageConst.ENTITY_NOT_FOUND)
+                    .build();
+            throw new DataNotFoundException(apiValidatorError);
+        }
     }
 
     @Override
     public Boolean delete(UUID id) {
-        if(!ObjectUtils.isEmpty(id)) {
-            try {
-                repository.deleteById(id);
-                return true;
-            } catch (EmptyResultDataAccessException e) {
-                return false;
-            }
+        if(!ObjectUtils.isEmpty(id) && repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
         }
         return false;
     }

@@ -1,31 +1,30 @@
 package com.globits.da.service.impl;
 
-import com.globits.da.domain.District;
+import com.globits.da.commons.ApiMessageError;
+import com.globits.da.consts.MessageConst;
 import com.globits.da.domain.Province;
 import com.globits.da.dto.ProvinceDto;
+import com.globits.da.exception.InvalidInputException;
 import com.globits.da.repository.ProvinceRepository;
-import com.globits.da.service.DistrictService;
 import com.globits.da.service.ProvinceService;
-import com.globits.da.utils.exception.InvalidDtoException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import com.globits.da.utils.InjectParam;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ProvinceServiceImpl implements ProvinceService {
     private final ProvinceRepository provinceRepository;
-    private final DistrictService districtService;
+    private final InjectParam injectParam;
 
     public ProvinceServiceImpl(ProvinceRepository provinceRepository,
-                               DistrictService districtService) {
+                               InjectParam injectParam) {
         this.provinceRepository = provinceRepository;
-        this.districtService = districtService;
+        this.injectParam = injectParam;
     }
 
     @Override
@@ -44,45 +43,52 @@ public class ProvinceServiceImpl implements ProvinceService {
     }
 
     @Override
-    public ProvinceDto saveOrUpdate(ProvinceDto dto, UUID id) {
-        if(!ObjectUtils.isEmpty(dto)) {
-            Province province = null;
-            if(!ObjectUtils.isEmpty(id)) {
-                if(!ObjectUtils.isEmpty(dto.getId()) && !id.equals(dto.getId())) {
-                    return null;
-                }
-                province = provinceRepository.getOne(id);
-            }
-            if(ObjectUtils.isEmpty(province)) {
-                province = new Province();
-            }
-            try {
-                province.setName(dto.getName());
-                province = provinceRepository.save(province);
-                List<District> districts = districtService.saveOrUpdateList(dto.getDistrictDtoList(), province);
-                province.setDistricts(districts);
-                province = provinceRepository.save(province);
-                if(!ObjectUtils.isEmpty(province)) {
-                    return new ProvinceDto(province);
-                }
-            } catch (EntityNotFoundException e) {
-                Map<String, String> errors = new HashMap<>();
-                errors.put("Province", "Not found!");
-                throw new InvalidDtoException(errors);
-            }
+    public ProvinceDto save(ProvinceDto dto) throws InvalidInputException {
+        if(ObjectUtils.isEmpty(dto)) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.DTO_NOT_NULL)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
         }
-        return null;
+        Province province = new Province();
+        injectParam.setProvinceValue(province, dto);
+        province = provinceRepository.save(province);
+        return new ProvinceDto(province);
+    }
+
+    @Override
+    public ProvinceDto update(ProvinceDto dto, UUID id) throws InvalidInputException {
+        if(ObjectUtils.isEmpty(dto)) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.DTO_NOT_NULL)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
+        if(!id.equals(dto.getId())) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.ID_UPDATE_NOT_MATCH)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
+        Optional<Province> provinceOpt = provinceRepository.findById(dto.getId());
+        if(provinceOpt.isPresent()) {
+            Province province = provinceOpt.get();
+            injectParam.setProvinceValue(province, dto);
+            province = provinceRepository.save(province);
+            return new ProvinceDto(province);
+        } else {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.NOT_FOUND)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
     }
 
     @Override
     public Boolean delete(UUID id) {
-        if(!ObjectUtils.isEmpty(id)) {
-            try {
-                provinceRepository.deleteById(id);
-                return true;
-            } catch (EmptyResultDataAccessException e) {
-                return false;
-            }
+        if(!ObjectUtils.isEmpty(id) && provinceRepository.existsById(id)) {
+            provinceRepository.deleteById(id);
+            return true;
         }
         return false;
     }

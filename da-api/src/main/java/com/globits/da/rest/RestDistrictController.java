@@ -2,6 +2,7 @@ package com.globits.da.rest;
 
 import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.DistrictDto;
+import com.globits.da.exception.InvalidInputException;
 import com.globits.da.service.DistrictService;
 import com.globits.da.validator.marker.OnCreate;
 import com.globits.da.validator.marker.OnUpdate;
@@ -46,11 +47,11 @@ public class RestDistrictController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<DistrictDto> add(@Validated(OnCreate.class) @RequestBody DistrictDto dto) {
+    public ResponseEntity<DistrictDto> add(@Validated(OnCreate.class) @RequestBody DistrictDto dto) throws InvalidInputException {
         if(!districtService.isValidDto(dto)) {
             return ResponseEntity.notFound().build();
         }
-        DistrictDto result = districtService.saveOrUpdate(dto, null);
+        DistrictDto result = districtService.save(dto);
         return ResponseEntity.ok()
                 .body(result);
     }
@@ -58,11 +59,11 @@ public class RestDistrictController {
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<DistrictDto> update(@Validated(OnUpdate.class) @RequestBody DistrictDto dto,
-                                                            @PathVariable UUID id) {
+                                                            @PathVariable UUID id) throws InvalidInputException {
         if(!districtService.isValidDto(dto)) {
             return ResponseEntity.notFound().build();
         }
-        DistrictDto result = districtService.saveOrUpdate(dto, id);
+        DistrictDto result = districtService.update(dto, id);
         return ResponseEntity.ok()
                 .body(result);
     }
