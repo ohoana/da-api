@@ -84,13 +84,12 @@ public class EmployeeServiceImpl extends GenericServiceImpl<Employee, UUID> impl
         String sqlCount = "select count(entity.id) from Employee as entity where (1=1) ";
         String orderBySql = "order by entity.id desc";
 
-        injectParam.updateQuery(searchDto, whereSql);
+        whereSql = injectParam.updateQuery(searchDto, whereSql);
         sql += whereSql + orderBySql;
         sqlCount += whereSql;
         Query sqlQuery = manager.createQuery(sql, EmployeeDto.class);
         Query sqlCountQuery = manager.createQuery(sqlCount);
         injectParam.setParamQuery(searchDto, sqlQuery, sqlCountQuery);
-
         int offset = pageIndex * pageSize;
         sqlQuery.setFirstResult(offset);
         sqlQuery.setMaxResults(pageSize);

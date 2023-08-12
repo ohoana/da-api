@@ -1,41 +1,34 @@
 package com.globits.da.service.impl;
 
+import com.globits.da.commons.ApiMessageError;
+import com.globits.da.commons.ApiValidatorError;
 import com.globits.da.consts.MessageConst;
-import com.globits.da.domain.Certificate;
 import com.globits.da.domain.CertificateMap;
-import com.globits.da.domain.Employee;
-import com.globits.da.domain.Province;
 import com.globits.da.dto.CertificateMapDto;
-import com.globits.da.repository.CertificateRepository;
-import com.globits.da.repository.EmployeeRepository;
-import com.globits.da.repository.ProvinceRepository;
+import com.globits.da.exception.DataNotFoundException;
+import com.globits.da.exception.InvalidInputException;
 import com.globits.da.repository.CertificateMapRepository;
 import com.globits.da.service.CertificateMapService;
-import com.globits.da.exception.InvalidDtoException;
+import com.globits.da.utils.InjectParam;
+import com.globits.da.validation.ValidationCertificateMap;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class CertificateMapServiceImpl implements CertificateMapService {
     private final CertificateMapRepository certificateMapRepository;
-    private final EmployeeRepository employeeRepository;
-    private final ProvinceRepository provinceRepository;
-    private final CertificateRepository certificateRepository;
+    private final InjectParam injectParam;
+    private final ValidationCertificateMap validationCertificateMap;
 
     public CertificateMapServiceImpl(CertificateMapRepository certificateMapRepository,
-                                     EmployeeRepository employeeRepository,
-                                     ProvinceRepository provinceRepository,
-                                     CertificateRepository certificateRepository) {
+                                     InjectParam injectParam, ValidationCertificateMap validationCertificateMap) {
         this.certificateMapRepository = certificateMapRepository;
-        this.employeeRepository = employeeRepository;
-        this.provinceRepository = provinceRepository;
-        this.certificateRepository = certificateRepository;
+        this.injectParam = injectParam;
+        this.validationCertificateMap = validationCertificateMap;
     }
 
     @Override
@@ -49,44 +42,48 @@ public class CertificateMapServiceImpl implements CertificateMapService {
     }
 
     @Override
-    public CertificateMapDto saveOrUpdate(CertificateMapDto dto, UUID id) {
-        if(!ObjectUtils.isEmpty(dto)) {
-            CertificateMap certificateMap = null;
-            if(!ObjectUtils.isEmpty(id)) {
-                if(!ObjectUtils.isEmpty(dto.getId()) && !id.equals(dto.getId())) {
-                    return null;
-                }
-                certificateMap = certificateMapRepository.getOne(id);
-            }
-
-            if(ObjectUtils.isEmpty(certificateMap)) {
-                certificateMap = new CertificateMap();
-            }
-            try {
-                Employee employee = employeeRepository.getOne(dto.getEmployeeId());
-                Certificate certificate = certificateRepository.getOne(dto.getCertificateId());
-                Province province = provinceRepository.getOne(dto.getProvinceId());
-
-                certificateMap.setEmployee(employee);
-                certificateMap.setProvince(province);
-                certificateMap.setCertificate(certificate);
-
-
-                certificateMap.setBeginDate(dto.getBeginDate());
-                certificateMap.setExpireDate(dto.getExpireDate());
-
-                certificateMap = certificateMapRepository.save(certificateMap);
-
-                if(!ObjectUtils.isEmpty(certificateMap)) {
-                    return new CertificateMapDto(certificateMap);
-                }
-            } catch (EntityNotFoundException e) {
-                Map<String, String> errors = new HashMap<>();
-                errors.put("Certificate Map", "Not found!");
-                throw new InvalidDtoException(errors);
-            }
+    public CertificateMapDto save(CertificateMapDto dto) throws InvalidInputException {
+        if(ObjectUtils.isEmpty(dto)) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.DTO_NOT_NULL)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
         }
-        return null;
+        CertificateMap certificateMap = new CertificateMap();
+        validationCertificateMap.checkValidCertificateMap(dto);
+        injectParam.setCertificateMapValue(certificateMap, dto);
+        certificateMap = certificateMapRepository.save(certificateMap);
+        return new CertificateMapDto(certificateMap);
+    }
+
+    @Override
+    public CertificateMapDto update(CertificateMapDto dto, UUID id) throws InvalidInputException {
+        if(ObjectUtils.isEmpty(dto)) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.DTO_NOT_NULL)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
+        if(!id.equals(dto.getId())) {
+            ApiMessageError apiMessageError = ApiMessageError.builder()
+                    .message(MessageConst.ID_UPDATE_NOT_MATCH)
+                    .build();
+            throw new InvalidInputException(apiMessageError);
+        }
+        Optional<CertificateMap> certificateMapOptional = certificateMapRepository.findById(dto.getId());
+        if(certificateMapOptional.isPresent()) {
+            CertificateMap certificateMap = certificateMapOptional.get();
+            validationCertificateMap.checkValidCertificateMap(dto);
+            injectParam.setCertificateMapValue(certificateMap, dto);
+            certificateMap = certificateMapRepository.save(certificateMap);
+            return new CertificateMapDto(certificateMap);
+        } else {
+            ApiValidatorError apiValidatorError = ApiValidatorError.builder()
+                    .field("Certificate Mapping")
+                    .message(MessageConst.ENTITY_NOT_FOUND)
+                    .build();
+            throw new DataNotFoundException(apiValidatorError);
+        }
     }
 
     @Override
@@ -96,37 +93,5 @@ public class CertificateMapServiceImpl implements CertificateMapService {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public Boolean isValidDto(CertificateMapDto dto) {
-        Map<String, String> errors = new HashMap<>();
-        if(!ObjectUtils.isEmpty(dto.getEmployeeId())
-                && !employeeRepository.existsById(dto.getEmployeeId())) {
-            errors.put("Employee", MessageConst.NOT_FOUND);
-        }
-        if(!ObjectUtils.isEmpty(dto.getCertificateId())
-                && !certificateRepository.existsById(dto.getCertificateId())) {
-            errors.put("Certificate", MessageConst.NOT_FOUND);
-        }
-        if(!ObjectUtils.isEmpty(dto.getProvinceId())
-                && !provinceRepository.existsById(dto.getProvinceId())) {
-            errors.put("Province", MessageConst.NOT_FOUND);
-        }
-        int numOfCertificateInUse =
-                certificateMapRepository.countCertificateInUse(dto.getEmployeeId(), dto.getCertificateId());
-        if(numOfCertificateInUse >= 3) {
-            errors.put("Certificate", MessageConst.CERTIFICATE_SAME_TYPE_ERROR);
-        }
-        if(!ObjectUtils.isEmpty(certificateMapRepository
-                .getCertificateInUseByProvinceId(dto.getEmployeeId(),
-                        dto.getCertificateId(),
-                        dto.getProvinceId()))) {
-            errors.put("Certificate", MessageConst.CERTIFICATE_LIMIT_ERROR);
-        }
-        if(!errors.isEmpty()) {
-            throw new InvalidDtoException(errors);
-        }
-        return true;
     }
 }

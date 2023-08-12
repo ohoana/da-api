@@ -1,5 +1,6 @@
 package com.globits.da.rest;
 
+import com.globits.da.exception.DataNotFoundException;
 import com.globits.da.exception.InvalidDtoException;
 import com.globits.da.exception.InvalidInputException;
 import org.springframework.core.Ordered;
@@ -42,6 +43,12 @@ public class ExceptionHandlerController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidInputException.class)
     public Object handlerEntityNotFound(InvalidInputException e) {
+        return e.getApiError();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DataNotFoundException.class)
+    public Object handlerDateNotFound(DataNotFoundException e) {
         return e.getApiError();
     }
 }

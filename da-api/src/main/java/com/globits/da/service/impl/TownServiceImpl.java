@@ -88,7 +88,7 @@ public class TownServiceImpl implements TownService {
         Optional<Town> townOpt = townRepository.findById(dto.getId());
         if(townOpt.isPresent()) {
             Town town = townOpt.get();
-            District district = ObjectUtils.isEmpty(dto.getDistrictId())
+            District district = !ObjectUtils.isEmpty(dto.getDistrictId())
                     ? districtRepository.getOne(dto.getDistrictId())
                     : null;
             injectParam.setTownValue(town, dto, district);

@@ -2,6 +2,7 @@ package com.globits.da.rest;
 
 import com.globits.da.AFFakeConstants;
 import com.globits.da.dto.CertificateMapDto;
+import com.globits.da.exception.InvalidInputException;
 import com.globits.da.service.CertificateMapService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -38,11 +39,8 @@ public class RestCertificateMapController {
 
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<CertificateMapDto> addCertificateToEmployee(@Valid @RequestBody CertificateMapDto dto) {
-        CertificateMapDto result = null;
-        if(certificateMapService.isValidDto(dto)){
-            result = certificateMapService.saveOrUpdate(dto, null);
-        }
+    public ResponseEntity<CertificateMapDto> addCertificateToEmployee(@Valid @RequestBody CertificateMapDto dto) throws InvalidInputException {
+        CertificateMapDto result = certificateMapService.save(dto);
         return ResponseEntity.ok()
                 .body(result);
     }
@@ -50,11 +48,8 @@ public class RestCertificateMapController {
     @Secured({AFFakeConstants.ROLE_ADMIN})
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<CertificateMapDto> updateCertificateToEmployee(@Valid @RequestBody CertificateMapDto dto,
-                                                                         @PathVariable UUID id) {
-        CertificateMapDto result = null;
-        if(certificateMapService.isValidDto(dto)){
-            result = certificateMapService.saveOrUpdate(dto, id);
-        }
+                                                                         @PathVariable UUID id) throws InvalidInputException {
+        CertificateMapDto result = certificateMapService.update(dto, id);
         return ResponseEntity.ok()
                 .body(result);
     }
